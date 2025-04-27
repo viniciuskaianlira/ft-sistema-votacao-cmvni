@@ -40,21 +40,21 @@
         </div>
         <div class="contador">
           <div class="box favoravel">
-            <span>4</span>
+            <span>-</span>
           </div>
           <div class="texto" style="color: #27c95d;">FAVORÁVEL</div>
         </div>
 
         <div class="contador">
           <div class="box contrario">
-            <span>4</span>
+            <span>-</span>
           </div>
           <div class="texto" style="color: #f1453d">CONTRÁRIO</div>
         </div>
 
         <div class="contador">
           <div class="box abstenção">
-            <span>1</span>
+            <span>-</span>
           </div>
           <div class="texto" style="color: #91a7ff">ABSTENÇÃO</div>
         </div>
@@ -195,7 +195,6 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  /* background-color: #4caf50; */
 }
 
 .escudo_leg {
