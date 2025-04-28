@@ -1,17 +1,16 @@
-<script setup>
-  import PublicoLayout from './components/PublicoLayout.vue';
-
-</script>
-
 <template>
-  <PublicoLayout  />
+  <router-view />
 </template>
 
-<style >
-  body {
-      margin: 0px;
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 0px;
-  }
+<script setup>
+// Aqui não precisa fazer nada extra
+</script>
+
+<style>
+/* Estilos globais, se quiser */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
 </style>
