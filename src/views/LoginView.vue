@@ -34,28 +34,38 @@
   </div>
 </template>
 
+
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+  import { ref } from 'vue';
+  import { useRouter } from 'vue-router';
 
-const router = useRouter();
-const usuario = ref('');
-const senha = ref('');
+  const router = useRouter();
+  const usuario = ref('');
+  const senha = ref('');
 
-function login() {
-  // Aqui você pode fazer validação de usuário e senha real depois
-  if (usuario.value.trim() && senha.value.trim()) {
-    const user = {
-      id: Date.now(),
-      nome: usuario.value,
-      role: 'user', // Você pode mudar conforme sua lógica
-      token: 'fake-jwt-token'
-    };
+  const login = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: usuario.value,
+          password: senha.value
+        })
+      });
 
-    localStorage.setItem('user', JSON.stringify(user));
-    router.push('/dashboard');
-  } else {
-    alert('Preencha todos os campos.');
-  }
-}
+      if (!response.ok) {
+        throw new Error('Credenciais inválidas');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      router.push('/dashboard');
+    } catch (error) {
+      alert(error.message);
+    }
+  };
 </script>
