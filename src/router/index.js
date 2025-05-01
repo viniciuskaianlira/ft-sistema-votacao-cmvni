@@ -42,6 +42,26 @@ const routes = [
         path: 'sessoes',
         name: 'Sessões',
         component: SessoesView
+      },
+      {
+        path: 'indicacoes',
+        name: 'Indicações',
+        component: () => import('@/views/IndicacoesView.vue') // Rota para Indicações
+      },
+      {
+        path: 'protocolos',
+        name: 'Protocolos',
+        component: () => import('@/views/ProtocolosView.vue') // Rota para Protocolos
+      },
+      {
+        path: 'vereadores',
+        name: 'Vereadores',
+        component: () => import('@/views/VereadoresView.vue') // Rota para Vereadores
+      },
+      {
+        path: 'mesadiretora',
+        name: 'Mesa Diretora',
+        component: () => import('@/views/MesaDiretoraView.vue') // Rota para Mesa Diretora
       }
       // … outras sub-rotas …
     ]
