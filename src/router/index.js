@@ -1,13 +1,15 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import LoginView from '../views/LoginView.vue';
-import DashboardView from '../views/DashboardView.vue';
-import SessaoView from '../views/SessaoView.vue';
-import { permissions } from '../utils/permissions.js';
+import { createRouter, createWebHistory } from 'vue-router'
+import LoginView     from '@/views/LoginView.vue'
+import DashboardView from '@/views/DashboardView.vue'
+import InicioView    from '@/views/InicioView.vue'
+import AtoView       from '@/views/AtoView.vue'
+import ProjetosView  from '@/views/ProjetosView.vue'
+import SessoesView   from '@/views/SessoesView.vue'
+import NotFoundView  from '@/views/404View.vue'
 
-// Simulação de Auth (você deve depois integrar com Vuex ou localStorage real)
 function getUser() {
-  const user = localStorage.getItem('user');
-  return user ? JSON.parse(user) : null;
+  const user = localStorage.getItem('user')
+  return user ? JSON.parse(user) : null
 }
 
 const routes = [
@@ -18,43 +20,50 @@ const routes = [
   },
   {
     path: '/dashboard',
-    name: 'Dashboard',
     component: DashboardView,
-    meta: { requiresAuth: true }
-  },
-  {
-    path: '/sessao',
-    name: 'Sessão',
-    component: SessaoView,
-    meta: { requiresAuth: true, roles: ['presidente', 'secretario'] }
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: '',            // rota default /dashboard
+        name: 'Inicio',
+        component: InicioView
+      },
+      {
+        path: 'ato',
+        name: 'Ato',
+        component: AtoView
+      },
+      {
+        path: 'projetos',
+        name: 'Projetos',
+        component: ProjetosView
+      },
+      {
+        path: 'sessoes',
+        name: 'Sessões',
+        component: SessoesView
+      }
+      // … outras sub-rotas …
+    ]
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/'
+    name: 'NotFound',
+    component: NotFoundView
   }
-];
+]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
-});
+})
 
-// Proteção de Rotas
 router.beforeEach((to, from, next) => {
-  const user = getUser();
-
+  const user = getUser()
   if (to.meta.requiresAuth) {
-    if (!user) {
-      return next({ name: 'Login' });
-    }
-
-    if (to.meta.roles && !to.meta.roles.includes(user.role)) {
-      // Se o usuário não tiver a role exigida pela rota
-      return next({ name: 'Dashboard' });
-    }
+    if (!user) return next({ name: 'Login' })
   }
+  next()
+})
 
-  next();
-});
-
-export default router;
+export default router

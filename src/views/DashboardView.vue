@@ -1,123 +1,58 @@
 <template>
-  <div class="dashboard-container">
-    <aside class="sidebar">
-      <div class="user-info">
-        <p>Bem-vindo, {{ user.nome }}</p>
-        <p class="role">Cargo: {{ capitalize(user.role) }}</p>
-      </div>
-      <nav class="menu">
-        <ul>
-          <li
-            v-for="item in menuItems"
-            :key="item.label"
-            @click="navigate(item.path)"
-            class="menu-item"
-          >
-            {{ item.label }}
-          </li>
-        </ul>
-      </nav>
-      <button class="logout-btn" @click="logout">Sair</button>
-    </aside>
-    <main class="content">
-      <router-view />
-    </main>
+  <div class="flex h-screen">
+    <Sidebar
+      :show="showSidebar"
+      @toggle="toggleSidebar"
+      @logout="logout"
+    />
+
+    <!-- Overlay for mobile when sidebar open -->
+    <div
+      v-if="showSidebar"
+      @click="toggleSidebar"
+      class="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+    />
+
+    <div
+      class="flex-1 flex flex-col"
+      :class="{ 'ml-64': showSidebar, 'ml-16': !showSidebar }"
+      style="transition: margin 0.3s ease-in-out;"
+    >
+      <TopBar
+        :count="notificationCount"
+        @toggle="toggleSidebar"
+        @logout="logout"
+      />
+
+      <main class="flex-1 overflow-auto p-6 bg-gray-50">
+        <router-view />
+      </main>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { fetchMenu } from '@/services/menuService.js';  // serviço que consome /api/menu
+import { ref, onMounted } from 'vue'
+import Sidebar from '@/components/SideBar.vue'
+import TopBar from '@/components/TopBar.vue'
+import { fetchMenu } from '@/services/menuService.js'
 
-// Função para capitalizar texto
-function capitalize(str) {
-  if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
+// State management
+const showSidebar = ref(true)
+const notificationCount = ref(3) // Exemplo fixo; pode vir de API
 
-const router = useRouter();
-const user = ref(JSON.parse(localStorage.getItem('user')) || {});
-const menuItems = ref([]);
-
-onMounted(async () => {
-  try {
-    menuItems.value = await fetchMenu();
-  } catch (err) {
-    console.error('Falha ao carregar menu:', err);
-    menuItems.value = [];
-  }
-});
-
-function navigate(path) {
-  router.push(path);
+function toggleSidebar() {
+  showSidebar.value = !showSidebar.value
 }
 
 function logout() {
-  localStorage.removeItem('user');
-  localStorage.removeItem('token');
-  router.push('/');
+  localStorage.removeItem('user')
+  localStorage.removeItem('token')
+  // Redireciona para login
+  window.location.href = '/'
 }
 </script>
 
 <style scoped>
-.dashboard-container {
-  display: flex;
-  min-height: 100vh;
-  font-family: Arial, sans-serif;
-}
-
-.sidebar {
-  width: 240px;
-  background: #f4f4f4;
-  padding: 20px;
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.user-info {
-  margin-bottom: 2rem;
-}
-
-.role {
-  font-size: 0.9em;
-  color: #555;
-}
-
-.menu ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.menu-item {
-  padding: 10px;
-  margin-bottom: 5px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.menu-item:hover {
-  background: #ddd;
-}
-
-.logout-btn {
-  padding: 10px;
-  background: #e74c3c;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.logout-btn:hover {
-  background: #c0392b;
-}
-
-.content {
-  flex: 1;
-  padding: 20px;
-}
+/* Sem estilos adicionais; tudo via Tailwind */
 </style>
