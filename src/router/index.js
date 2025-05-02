@@ -1,3 +1,4 @@
+// src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView     from '@/views/LoginView.vue'
 import DashboardView from '@/views/DashboardView.vue'
@@ -6,10 +7,19 @@ import AtoView       from '@/views/AtoView.vue'
 import ProjetosView  from '@/views/ProjetosView.vue'
 import SessoesView   from '@/views/SessoesView.vue'
 import NotFoundView  from '@/views/404View.vue'
+// () => import('@/views/MesaDiretoraView.vue')
+import MesaDiretora from '@/views/MesaDiretoraView.vue';
 
 function getUser() {
-  const user = localStorage.getItem('user')
-  return user ? JSON.parse(user) : null
+  const raw = localStorage.getItem('user')
+  try {
+    return raw && raw !== 'undefined'
+      ? JSON.parse(raw)
+      : null
+  } catch (e) {
+    console.error('Erro ao fazer parse do user:', e)
+    return null
+  }
 }
 
 const routes = [
@@ -20,84 +30,85 @@ const routes = [
   },
   {
     path: '/dashboard',
+    name: 'Dashboard',
     component: DashboardView,
     meta: { requiresAuth: true },
     children: [
       {
-        path: '',            // rota default /dashboard
-        name: 'Inicio',
+        path: '',
+        name: '/inicio',
         component: InicioView
       },
       {
-        path: 'ato',
+        path: '/ato',
         name: 'Ato',
         component: AtoView
       },
       {
-        path: 'projetos',
+        path: '/projetos',
         name: 'Projetos',
         component: ProjetosView
       },
       {
-        path: 'sessoes',
+        path: '/sessoes',
         name: 'Sessões',
         component: SessoesView
       },
       {
-        path: 'indicacoes',
+        path: '/indicacoes',
         name: 'Indicações',
-        component: () => import('@/views/IndicacoesView.vue') // Rota para Indicações
+        component: () => import('@/views/IndicacoesView.vue')
       },
       {
-        path: 'protocolos',
+        path: '/protocolos',
         name: 'Protocolos',
-        component: () => import('@/views/ProtocolosView.vue') // Rota para Protocolos
+        component: () => import('@/views/ProtocolosView.vue')
       },
       {
-        path: 'vereadores',
+        path: '/vereadores',
         name: 'Vereadores',
-        component: () => import('@/views/VereadoresView.vue') // Rota para Vereadores
+        component: () => import('@/views/VereadoresView.vue')
       },
       {
-        path: 'mesadiretora',
+        path: '/mesadiretora',
         name: 'Mesa Diretora',
-        component: () => import('@/views/MesaDiretoraView.vue') // Rota para Mesa Diretora
+        component: MesaDiretora
       },
       {
-        path: 'legislaturas',
+        path: '/legislaturas',
         name: 'Legislaturas',
-        component: () => import('@/views/LegislaturasView.vue') // Rota para Legislaturas
+        component: () => import('@/views/LegislaturasView.vue')
       },
       {
-        path: 'proposicoes',
+        path: '/proposicoes',
         name: 'Proposições',
-        component: () => import('@/views/ProposicoesView.vue') // Rota para Proposições
+        component: () => import('@/views/ProposicoesView.vue')
       },
       {
-        path: 'oficios',
+        path: '/oficios',
         name: 'Ofícios',
-        component: () => import('@/views/OficiosView.vue') // Rota para Ofícios
+        component: () => import('@/views/OficiosView.vue')
       },
       {
-        path: 'sessao/:id', // Rota para a tela de sessão ativa
+        path: '/sessao/:id',
         name: 'SessaoAtiva',
         component: () => import('@/views/SessaoAtivaView.vue'),
-        props: true // Passa o :id como prop para o componente
+        props: true
       },
       {
-        path: 'relatorios/votos',
+        path: '/relatorios/votos',
         name: 'RelatorioVotos',
         component: () => import('@/views/RelatorioVotosView.vue')
       },
       {
-        path: 'relatorios/presenca',
+        path: '/relatorios/presenca',
         name: 'RelatorioPresenca',
         component: () => import('@/views/RelatorioPresencaView.vue')
       },
       {
-        path: 'sessoes/presenca',
+        path: '/sessoes/presenca',
         name: 'RegistroPresenca',
-        component: () => import('@/views/PresencaView.vue') // Rota para registro de presença
+        component: () => import('@/views/PresencaView.vue')
       }
       // … outras sub-rotas …
     ]
@@ -116,8 +127,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const user = getUser()
-  if (to.meta.requiresAuth) {
-    if (!user) return next({ name: 'Login' })
+  if (to.meta.requiresAuth && !user) {
+    return next({ name: 'Login' })
   }
   next()
 })

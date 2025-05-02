@@ -115,8 +115,8 @@
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div v-for="vereador in vereadores" :key="vereador.id" class="p-4 border rounded-lg shadow-sm">
         <h3 class="font-semibold text-lg">{{ vereador.nome_urna }}</h3>
-        <p class="text-sm text-gray-700">{{ vereador.nome }}</p>
-        <p class="text-sm text-gray-500">Partido: {{ vereador.partido }}</p>
+        <p class="text-sm text-gray-700">{{ vereador.nome_vereador }}</p>
+        <p class="text-sm text-gray-500">Partido: {{ vereador.nome_vereador }}</p>
         <p class="text-sm text-gray-500">Email: {{ vereador.email || '-' }}</p>
         <p class="text-sm text-gray-500">Telefone: {{ vereador.telefone || '-' }}</p>
         <div class="mt-3 pt-3 border-t flex justify-end space-x-2">
@@ -166,6 +166,7 @@ const fetchData = async () => {
   loading.value = true;
   try {
     const response = await vereadoresService.getAll();
+    console.log(response);
     vereadores.value = response.data || [];
   } catch (error) {
     console.error('Erro ao buscar vereadores:', error);

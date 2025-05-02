@@ -13,6 +13,13 @@ export const useAuthStore = defineStore('auth', {
     setToken(payload) {
       this.token = payload
     },
+    setCredentials({ user, token }) {  // ← adicione esta função
+      this.user = user
+      this.token = token
+      // console.log("TOKEN: " + this.token);
+      localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('token', token)
+    },
     logout() {
       this.user = null
       this.token = null
