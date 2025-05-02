@@ -1,38 +1,35 @@
 import api from './api';
 
 const sessoesService = {
-  getAll: (id = null) => {
-    const url = id ? `/sessao/${id}` : '/sessao	'; // Ajustar endpoint se necessário
-    return api.get(url);
-  },
+  // Funções CRUD existentes
+  getAll: () => api.get('/sessoes'),
+  getById: (id) => api.get(`/sessoes/${id}`),
+  create: (data) => api.post('/sessoes', data),
+  update: (id, data) => api.put(`/sessoes/${id}`, data),
+  delete: (id) => api.delete(`/sessoes/${id}`),
+  getTiposSessao: () => api.get('/tipos_sessao'), // Assumindo que existe
 
-  create: (data) => {
-    // Formato da data/hora pode precisar de ajuste para o backend
-    return api.post('/sessao', data);
-  },
+  // --- Novas Funções para Controle da Sessão ---
 
-  update: (id, data) => {
-    return api.put(`/sessao/${id}`, data);
-  },
+  // Iniciar/Encerrar Sessão
+  iniciarSessao: (id) => api.post(`/sessoes/${id}/iniciar`),
+  encerrarSessao: (id) => api.post(`/sessoes/${id}/encerrar`),
 
-  delete: (id) => {
-    return api.delete(`/sessao/${id}`);
-  },
+  // Controle de Votação (Exemplos)
+  abrirVotacao: (sessaoId, itemId) => api.post(`/sessoes/${sessaoId}/votacao/${itemId}/abrir`),
+  fecharVotacao: (sessaoId, itemId) => api.post(`/sessoes/${sessaoId}/votacao/${itemId}/fechar`),
+  registrarVoto: (sessaoId, itemId, votoData) => api.post(`/sessoes/${sessaoId}/votacao/${itemId}/votar`, votoData), // votoData = { vereadorId: x, voto: 'sim'/'nao'/'abstencao' }
+  getResultadoVotacao: (sessaoId, itemId) => api.get(`/sessoes/${sessaoId}/votacao/${itemId}/resultado`),
 
-  // Exemplo: buscar tipos de sessão (se houver endpoint)
-  getTiposSessao: () => {
-    return api.get('/tiposessao'); // Ajustar endpoint
-    // Mock data se não houver endpoint ainda
-    return Promise.resolve({ data: [{id: 1, nome: 'Ordinária'}, {id: 2, nome: 'Extraordinária'}, {id: 3, nome: 'Solene'}] });
-  },
+  // Pedido de Vista
+  registrarPedidoVista: (sessaoId, itemId, vereadorId) => api.post(`/sessoes/${sessaoId}/votacao/${itemId}/pedir_vista`, { vereadorId }),
 
-  // Funções relacionadas ao controle da sessão (iniciar, encerrar, etc.) podem ser adicionadas aqui
-  iniciar: (id) => { 
-    return api.post(`/sessao/${id}/iniciar`); 
-  },
-  encerrar: (id) => {
-    return api.post( `/sessao/${id}/encerrar`); 
-  },
+  // Obter Pauta/Itens da Sessão
+  getPauta: (sessaoId) => api.get(`/sessoes/${sessaoId}/pauta`), // Retorna itens a serem votados
+
+  // Obter Status da Sessão (incluindo votação atual, se houver)
+  getStatus: (sessaoId) => api.get(`/sessoes/${sessaoId}/status`),
+
 };
 
 export default sessoesService;

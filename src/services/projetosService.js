@@ -1,34 +1,33 @@
+
 import api from './api';
 
 const projetosService = {
-  getAll: (id = null) => {
-    const url = id ? `/projeto/${id}` : '/projeto';
-    return api.get(url);
-  },
+  // Funções CRUD existentes (simplificadas para exemplo)
+  getProjetos: () => api.get('/projetos'),
+  getProjetoById: (id) => api.get(`/projetos/${id}`),
+  createProjeto: (data) => api.post('/projetos', data),
+  updateProjeto: (id, data) => api.put(`/projetos/${id}`, data),
+  deleteProjeto: (id) => api.delete(`/projetos/${id}`),
 
-  create: (data) => {
-    // Pode precisar ajustar para enviar como FormData se houver upload de arquivos
-    return api.post('/projeto', data);
-  },
+  // Função para buscar tipos de projeto (já existente)
+  getTiposProjeto: () => api.get('/tipos_projeto'), // Assumindo que existe essa rota
 
-  update: (id, data) => {
-    // Pode precisar ajustar para enviar como FormData se houver upload de arquivos
-    return api.put(`/projeto/${id}`, data);
-  },
+  // --- Novas Funções --- 
 
-  delete: (id) => {
-    return api.delete(`/projeto/${id}`);
-  },
+  // Funções para Proponentes
+  getProponentesProjeto: (projetoId) => api.get(`/projetos/${projetoId}/proponentes`),
+  addProponenteProjeto: (projetoId, vereadorId) => api.post(`/projetos/${projetoId}/proponentes`, { vereadorId }),
+  removeProponenteProjeto: (projetoId, vereadorId) => api.delete(`/projetos/${projetoId}/proponentes/${vereadorId}`),
+  updateProponentesProjeto: (projetoId, proponentesIds) => api.put(`/projetos/${projetoId}/proponentes`, { proponentes: proponentesIds }), // Rota para atualizar todos de uma vez
 
-  // Exemplo: buscar tipos de projeto (se houver endpoint)
-  getTipos: () => {
-    return api.get('/tipoprojeto');
-  },
-
-  // Exemplo: buscar proponentes (vereadores) (se houver endpoint)
-  getProponentes: () => {
-    return api.get('/vereador'); // Ajustar se a rota for diferente
-  }
+  // Funções para Arquivos
+  getArquivosProjeto: (projetoId) => api.get(`/projetos/${projetoId}/arquivos`),
+  uploadArquivoProjeto: (projetoId, formData) => api.post(`/projetos/${projetoId}/arquivos`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  }),
+  deleteArquivoProjeto: (projetoId, arquivoId) => api.delete(`/projetos/${projetoId}/arquivos/${arquivoId}`),
 };
 
 export default projetosService;

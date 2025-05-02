@@ -62,6 +62,42 @@ const routes = [
         path: 'mesadiretora',
         name: 'Mesa Diretora',
         component: () => import('@/views/MesaDiretoraView.vue') // Rota para Mesa Diretora
+      },
+      {
+        path: 'legislaturas',
+        name: 'Legislaturas',
+        component: () => import('@/views/LegislaturasView.vue') // Rota para Legislaturas
+      },
+      {
+        path: 'proposicoes',
+        name: 'Proposições',
+        component: () => import('@/views/ProposicoesView.vue') // Rota para Proposições
+      },
+      {
+        path: 'oficios',
+        name: 'Ofícios',
+        component: () => import('@/views/OficiosView.vue') // Rota para Ofícios
+      },
+      {
+        path: 'sessao/:id', // Rota para a tela de sessão ativa
+        name: 'SessaoAtiva',
+        component: () => import('@/views/SessaoAtivaView.vue'),
+        props: true // Passa o :id como prop para o componente
+      },
+      {
+        path: 'relatorios/votos',
+        name: 'RelatorioVotos',
+        component: () => import('@/views/RelatorioVotosView.vue')
+      },
+      {
+        path: 'relatorios/presenca',
+        name: 'RelatorioPresenca',
+        component: () => import('@/views/RelatorioPresencaView.vue')
+      },
+      {
+        path: 'sessoes/presenca',
+        name: 'RegistroPresenca',
+        component: () => import('@/views/PresencaView.vue') // Rota para registro de presença
       }
       // … outras sub-rotas …
     ]
