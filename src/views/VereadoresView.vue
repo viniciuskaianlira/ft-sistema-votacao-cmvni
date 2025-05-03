@@ -1,6 +1,14 @@
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
-    <h1 class="text-2xl font-bold mb-4">Lista de Vereadores</h1>
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold">Lista de Vereadores</h1>
+      <button
+        @click="showCreate = true"
+        class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+      >
+        + Novo Vereador
+      </button>
+    </div>
 
     <DataTable
       :key="reloadKey"
@@ -12,11 +20,20 @@
       @delete="onDelete"
     />
 
-    <!-- Modal de detalhes -->
+    <!-- Modal de detalhes existente -->
     <VereadorDetailModal
       v-if="showModal"
       v-model:visible="showModal"
-      :vereador-id="selectedVereadorId.value"
+      :vereador-id="selectedVereadorId"
+    />
+
+    <!-- Novo Modal de criação -->
+    <DynamicFormModal
+      v-model:visible="showCreate"
+      :fields="createFields"
+      endpoint="http://localhost:3000/api/vereador"
+      title="Novo Vereador"
+      @saved="onCreated"
     />
   </div>
 </template>
@@ -27,10 +44,11 @@ import { useToast } from 'vue-toastification'
 import vereadoresService from '@/services/vereadoresService'
 import DataTable from '@/components/tables/DataTable.vue'
 import VereadorDetailModal from '@/components/modals/VereadorDetailModal.vue'
+import DynamicFormModal from '@/components/modals/DynamicFormModal.vue'
 
 const toast = useToast()
 
-// Definição das colunas da tabela
+// Colunas da tabela
 const columns = [
   { label: 'ID',      field: 'id' },
   { label: 'Nome',    field: 'nome' },
@@ -38,13 +56,36 @@ const columns = [
   { label: 'Ativo',   field: 'ativo' }
 ]
 
-// Chave reativa para forçar reload no DataTable
+// Para recarregar a DataTable após ações
 const reloadKey = ref(0)
-// Controle do modal e ID selecionado
+
+// Controle do modal de detalhes
 const showModal = ref(false)
 const selectedVereadorId = ref(null)
 
-// Ações disparadas pelos botões na coluna "Ação"
+// Controle do modal de criação
+const showCreate = ref(false)
+
+// Definição dinâmica dos campos para criar um vereador
+const createFields = [
+  { label: 'Nome Completo',     field: 'nome', type: 'text' },
+  { label: 'Usuário',           field: 'username', type: 'text' },
+  { label: 'Partido',           field: 'partido', type: 'text'},
+  { label: 'Sigla do Partido',  field: 'sigla_partido', type: 'text' },
+  { label: 'Legislatura',      field: 'legislatura_id', type: 'select',
+    optionEndpoint: 'http://localhost:3000/api/legislatura',
+    optionValue: 'id',
+    optionLabel: 'numero'
+   }
+]
+
+// { label: 'Partido',       field: 'partido', type: 'select',
+//     optionEndpoint: 'http://localhost:3000/api/partidos',
+//     optionValue: 'id',
+//     optionLabel: 'nome'
+//   },
+
+// Ações da coluna "Ação"
 function onView(row) {
   selectedVereadorId.value = row.id
   showModal.value = true
@@ -65,8 +106,15 @@ async function onDelete(row) {
     toast.error(err.response?.data?.message || 'Falha ao excluir o vereador.')
   }
 }
+
+// Callback disparado quando o DynamicFormModal salva com sucesso
+function onCreated(newVereador) {
+  toast.success('Vereador criado com sucesso!')
+  reloadKey.value++     // força recarga da tabela
+  showCreate.value = false
+}
 </script>
 
 <style scoped>
-/* estilos adicionais, se necessário */
+/* ajustes finos, se necessário */
 </style>
