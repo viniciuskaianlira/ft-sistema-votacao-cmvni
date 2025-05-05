@@ -1,3 +1,46 @@
+<!-- componente DynamicFormModal.vue com:
+
+Props:
+
+visible (v-model:visible) para mostrar/ocultar.
+
+fields: array de objetos { label, field, type, [optionEndpoint, optionValue, optionLabel] }.
+
+endpoint: URL para POST de criação.
+
+title: título do modal.
+
+Tipos de campo:
+
+text, number, email: gera <input>.
+
+textarea: gera <textarea>.
+
+select: busca opções em optionEndpoint e gera <select>.
+
+Uso:
+
+vue
+Copiar
+Editar
+<DynamicFormModal
+  v-model:visible="showCreate"
+  :fields="[
+    { label: 'Nome', field: 'nome', type: 'text' },
+    { label: 'Partido', field: 'partido', type: 'select',
+      optionEndpoint: '/api/partidos',
+      optionValue: 'id',
+      optionLabel: 'nome'
+    },
+    // …outros campos…
+  ]"
+  endpoint="/api/vereador"
+  title="Novo Vereador"
+  @saved="fetchData"  <!-- atualiza lista ao salvar -->
+/> -->
+
+
+
 <template>
     <transition name="modal">
       <div

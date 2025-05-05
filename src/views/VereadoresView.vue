@@ -70,6 +70,7 @@ const showCreate = ref(false)
 const createFields = [
   { label: 'Nome Completo',     field: 'nome', type: 'text' },
   { label: 'Usuário',           field: 'username', type: 'text' },
+  { label: 'Senha Temporária',  field: 'password', type: 'text'},
   { label: 'Partido',           field: 'partido', type: 'text'},
   { label: 'Sigla do Partido',  field: 'sigla_partido', type: 'text' },
   { label: 'Legislatura',      field: 'legislatura_id', type: 'select',
@@ -79,11 +80,6 @@ const createFields = [
    }
 ]
 
-// { label: 'Partido',       field: 'partido', type: 'select',
-//     optionEndpoint: 'http://localhost:3000/api/partidos',
-//     optionValue: 'id',
-//     optionLabel: 'nome'
-//   },
 
 // Ações da coluna "Ação"
 function onView(row) {
