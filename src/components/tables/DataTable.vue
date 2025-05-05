@@ -54,7 +54,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import axios from 'axios'
+import api from '@/services/api.js'
 import { useToast } from 'vue-toastification'
 
 const props = defineProps({
@@ -109,13 +109,9 @@ async function fetchData() {
   loading.value = true
   error.value = false
   try {
-    const token = localStorage.getItem('token')
-    const response = await axios.get(props.endpoint, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    rows.value = Array.isArray(response.data)
-      ? response.data
-      : response.data.data || []
+    const response = await api.get(props.endpoint)
+    const data = response.data
+    rows.value = Array.isArray(data) ? data : data.data || []
   } catch (err) {
     error.value = true
     toast.error('Erro ao carregar dados: ' + (err.response?.data?.message || err.message))
