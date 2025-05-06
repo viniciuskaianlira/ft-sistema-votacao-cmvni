@@ -1,5 +1,6 @@
 import api from './api.js';
-import jwtDecode from 'jwt-decode';
+// import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 const authService = {
   login: (credentials) => {
