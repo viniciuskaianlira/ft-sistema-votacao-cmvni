@@ -51,7 +51,7 @@
           </div>
 
           <!-- Footer Buttons -->
-          <div class="flex justify-end space-x-2 pt-4 border-t">
+          <div class="flex justify-end space-x-2 pt-4">
             <button type="button" @click="closeModal" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
               Cancelar
             </button>

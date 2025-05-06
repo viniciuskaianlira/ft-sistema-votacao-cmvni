@@ -11,7 +11,7 @@
       </button>
     </div>
 
-    <DataTable
+    <BaseList
       :key="reloadKey"
       endpoint="/vereador"
       :columns="columns"
@@ -23,14 +23,14 @@
     />
 
     <!-- Detalhes -->
-    <VereadorDetailModal
+    <BaseDetail
       v-if="showModal && selectedVereadorId != null"
       v-model:visible="showModal"
       :vereador-id="selectedVereadorId"
     />
 
     <!-- Criação -->
-    <DynamicFormModal
+    <BaseFormCreate
       v-model:visible="showCreate"
       endpoint="/vereador"
       :fields="createFields"
@@ -39,7 +39,7 @@
     />
 
     <!-- Edição via RegistroEditor com modal interno -->
-    <RegistroEditor
+    <BaseFormEdit
       v-model:visible="showEdit"
       title="Editar Vereador"
       endpoint="/vereador"
@@ -54,10 +54,12 @@
 <script setup>
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
-import DataTable from '@/components/tables/DataTable.vue'
-import VereadorDetailModal from '@/components/modals/VereadorDetailModal.vue'
-import DynamicFormModal from '@/components/modals/DynamicFormModal.vue'
-import RegistroEditor from '@/components/forms/RegistroEditor.vue'
+
+import BaseList from '@/components/crud/BaseList.vue'
+import BaseDetail from '@/components/crud/BaseDetail.vue'
+import BaseFormCreate from '@/components/crud/BaseFormCreate.vue'
+import BaseFormEdit from '@/components/crud/BaseFormEdit.vue'
+
 import vereadoresService from '@/services/vereadoresService'
 
 const toast = useToast()
@@ -91,10 +93,6 @@ const createFields = [
     optionsLabelKey: 'numero'
   }
 ]
-
-
-// { name: 'descricao', label: 'Descrição', type: 'text', maxLength: 50 }
-
 
 const editFields = [
   { name: 'partido',       label: 'Partido',          type: 'text',     placeholder: 'Digite o partido' },
