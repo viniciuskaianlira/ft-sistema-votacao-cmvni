@@ -1,4 +1,3 @@
-<!-- src/components/crud/BaseFormCreate.vue -->
 <template>
   <transition name="modal">
     <div v-if="visible" class="fixed inset-0 z-50 flex items-center justify-center">
@@ -32,9 +31,9 @@
               {{ field.label }}
             </label>
 
-            <!-- Text/Number/Email/Password -->
+            <!-- Text/Number/Email/Password/Date -->
             <input
-              v-if="['text','number','email','password'].includes(field.type)"
+              v-if="['text','number','email','password','date'].includes(field.type)"
               :id="field.field ?? field.name"
               v-model="form[keyOf(field)]"
               :type="field.type"
@@ -68,6 +67,52 @@
                 {{ opt[field.optionsLabelKey] }}
               </option>
             </select>
+
+            <!-- File Upload -->
+            <input
+              v-else-if="field.type==='file'"
+              type="file"
+              :id="field.field ?? field.name"
+              :multiple="field.multiple || false"
+              @change="onFilesChange($event, field)"
+              class="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            <!-- Tags Input (multiple values) -->
+            <div v-else-if="field.type==='tags'" class="space-y-2">
+              <div class="flex space-x-2">
+                <input
+                  type="text"
+                  v-model="tagInput[keyOf(field)]"
+                  :placeholder="field.placeholder || 'Digite e pressione Enter'"
+                  @keyup.enter.prevent="addTag(field)"
+                  class="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
+                />
+                <button
+                  type="button"
+                  @click="addTag(field)"
+                  class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Adicionar
+                </button>
+              </div>
+              <div class="flex flex-wrap mt-2">
+                <span
+                  v-for="(tag, idx) in form[keyOf(field)]"
+                  :key="idx"
+                  class="mr-2 mb-2 px-2 py-1 bg-gray-200 rounded-full flex items-center"
+                >
+                  {{ tag }}
+                  <button
+                    type="button"
+                    @click="removeTag(field, idx)"
+                    class="ml-1 text-gray-600 hover:text-gray-800"
+                  >
+                    ×
+                  </button>
+                </span>
+              </div>
+            </div>
           </div>
 
           <!-- Buttons -->
@@ -98,18 +143,18 @@ import api from '@/services/api.js'
 import { useToast } from 'vue-toastification'
 
 const props = defineProps({
-  visible:  { type: Boolean, required: true },
-  fields:   { type: Array,   required: true },
-  endpoint: { type: String,  required: true },
-  title:    { type: String,  default: 'Novo' }
+  visible:   { type: Boolean, required: true },
+  fields:    { type: Array,   required: true },
+  endpoint:  { type: String,  required: true },
+  title:     { type: String,  default: 'Novo' }
 })
 const emit = defineEmits(['update:visible','saved'])
 
 const toast = useToast()
 const form = reactive({})
 const options = reactive({})
+const tagInput = reactive({})
 
-/** Pega a chave do campo: `field.field` ou, se ausente, `field.name` */
 function keyOf(field) {
   return field.field ?? field.name
 }
@@ -117,12 +162,18 @@ function keyOf(field) {
 function initForm() {
   props.fields.forEach(f => {
     const key = keyOf(f)
-    form[key] = ''
+    // inicializa arrays para file e tags
+    if (f.type === 'file') form[key] = []
+    else if (f.type === 'tags') {
+      form[key] = []
+      tagInput[key] = ''
+    }
+    else form[key] = ''
+
     if (f.type === 'select' && f.optionsEndpoint) {
       options[key] = []
       api.get(f.optionsEndpoint)
         .then(res => {
-          // unwrap: res.data ou res.data.data
           const arr = Array.isArray(res.data)
             ? res.data
             : res.data.data || []
@@ -139,9 +190,46 @@ function initForm() {
 watch(() => props.visible, v => { if (v) initForm() })
 onMounted(() => { if (props.visible) initForm() })
 
+function onFilesChange(event, field) {
+  const files = Array.from(event.target.files)
+  form[keyOf(field)] = files
+}
+
+function addTag(field) {
+  const key = keyOf(field)
+  const val = tagInput[key].trim()
+  if (val) {
+    form[key].push(val)
+    tagInput[key] = ''
+  }
+}
+
+function removeTag(field, idx) {
+  form[keyOf(field)].splice(idx, 1)
+}
+
 async function onSubmit() {
   try {
-    const res = await api.post(props.endpoint, form)
+    let payload = form
+    let config = {}
+    // se tiver file, usa FormData
+    if (props.fields.some(f => f.type === 'file')) {
+      const data = new FormData()
+      Object.keys(form).forEach(key => {
+        const val = form[key]
+        if (Array.isArray(val) && val[0] instanceof File) {
+          val.forEach(file => data.append(key, file))
+        } else if (Array.isArray(val)) {
+          val.forEach(item => data.append(key, item))
+        } else {
+          data.append(key, val)
+        }
+      })
+      payload = data
+      config = { headers: { 'Content-Type': 'multipart/form-data' } }
+    }
+
+    const res = await api.post(props.endpoint, payload, config)
     toast.success('Salvo com sucesso!')
     emit('saved', res.data)
     close()
