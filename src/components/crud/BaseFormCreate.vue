@@ -1,9 +1,10 @@
+<!-- src/components/crud/BaseFormCreate.vue -->
 <template>
   <transition name="modal">
     <div v-if="visible" class="fixed inset-0 z-50 flex items-center justify-center">
       <!-- Backdrop -->
       <div class="absolute inset-0 bg-black opacity-50" @click="close"></div>
-      <!-- Modal Container (semi-transparente) -->
+      <!-- Modal Container -->
       <div class="relative bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 z-10">
         <!-- Close Button -->
         <button
@@ -19,16 +20,23 @@
 
         <!-- Form -->
         <form @submit.prevent="onSubmit" class="space-y-4">
-          <div v-for="field in fields" :key="field.field" class="flex flex-col">
-            <label :for="field.field" class="mb-1 text-sm font-medium text-gray-700">
+          <div
+            v-for="field in fields"
+            :key="field.field ?? field.name"
+            class="flex flex-col"
+          >
+            <label
+              :for="field.field ?? field.name"
+              class="mb-1 text-sm font-medium text-gray-700"
+            >
               {{ field.label }}
             </label>
 
-            <!-- Input Types -->
+            <!-- Text/Number/Email/Password -->
             <input
               v-if="['text','number','email','password'].includes(field.type)"
-              :id="field.field"
-              v-model="form[field.field]"
+              :id="field.field ?? field.name"
+              v-model="form[keyOf(field)]"
               :type="field.type"
               :placeholder="field.placeholder || ''"
               class="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -37,8 +45,8 @@
             <!-- Textarea -->
             <textarea
               v-else-if="field.type==='textarea'"
-              :id="field.field"
-              v-model="form[field.field]"
+              :id="field.field ?? field.name"
+              v-model="form[keyOf(field)]"
               :placeholder="field.placeholder || ''"
               rows="4"
               class="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -47,17 +55,17 @@
             <!-- Select -->
             <select
               v-else-if="field.type==='select'"
-              :id="field.field"
-              v-model="form[field.field]"
+              :id="field.field ?? field.name"
+              v-model="form[keyOf(field)]"
               class="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="" disabled>Selecione {{ field.label }}</option>
               <option
-                v-for="opt in options[field.field]"
-                :key="opt[field.optionValue]"
-                :value="opt[field.optionValue]"
+                v-for="opt in options[keyOf(field)]"
+                :key="opt[field.optionsValueKey]"
+                :value="opt[field.optionsValueKey]"
               >
-                {{ opt[field.optionLabel] }}
+                {{ opt[field.optionsLabelKey] }}
               </option>
             </select>
           </div>
@@ -90,10 +98,10 @@ import api from '@/services/api.js'
 import { useToast } from 'vue-toastification'
 
 const props = defineProps({
-  visible: { type: Boolean, required: true },
-  fields: { type: Array, required: true },
-  endpoint: { type: String, required: true },
-  title: { type: String, default: 'Novo' }
+  visible:  { type: Boolean, required: true },
+  fields:   { type: Array,   required: true },
+  endpoint: { type: String,  required: true },
+  title:    { type: String,  default: 'Novo' }
 })
 const emit = defineEmits(['update:visible','saved'])
 
@@ -101,43 +109,54 @@ const toast = useToast()
 const form = reactive({})
 const options = reactive({})
 
+/** Pega a chave do campo: `field.field` ou, se ausente, `field.name` */
+function keyOf(field) {
+  return field.field ?? field.name
+}
+
 function initForm() {
   props.fields.forEach(f => {
-    form[f.field] = ''
-    if(f.type==='select'&&f.optionEndpoint){
-      options[f.field]=[]
-      api.get(f.optionEndpoint)
-        .then(res=>{
-          const arr=Array.isArray(res.data)?res.data:res.data.data||[]
-          options[f.field]=arr
+    const key = keyOf(f)
+    form[key] = ''
+    if (f.type === 'select' && f.optionsEndpoint) {
+      options[key] = []
+      api.get(f.optionsEndpoint)
+        .then(res => {
+          // unwrap: res.data ou res.data.data
+          const arr = Array.isArray(res.data)
+            ? res.data
+            : res.data.data || []
+          options[key] = arr
         })
-        .catch(e=>{
-          console.error(`Erro ao carregar opções ${f.field}:`,e)
+        .catch(e => {
+          console.error(`Erro ao carregar opções ${key}:`, e)
           toast.error(`Falha ao carregar opções de ${f.label}`)
         })
     }
   })
 }
 
-watch(()=>props.visible,v=>{if(v)initForm()})
-onMounted(()=>{if(props.visible)initForm()})
+watch(() => props.visible, v => { if (v) initForm() })
+onMounted(() => { if (props.visible) initForm() })
 
-async function onSubmit(){
-  try{
-    const res=await api.post(props.endpoint,form)
+async function onSubmit() {
+  try {
+    const res = await api.post(props.endpoint, form)
     toast.success('Salvo com sucesso!')
-    emit('saved',res.data)
+    emit('saved', res.data)
     close()
-  }catch(e){
-    console.error('Erro ao salvar:',e)
-    toast.error(e.response?.data?.message||'Falha ao salvar.')
+  } catch (e) {
+    console.error('Erro ao salvar:', e)
+    toast.error(e.response?.data?.message || 'Falha ao salvar.')
   }
 }
 
-function close(){emit('update:visible',false)}
+function close() {
+  emit('update:visible', false)
+}
 </script>
 
 <style scoped>
-.modal-enter-active,.modal-leave-active{transition:opacity 0.2s ease}
-.modal-enter-from,.modal-leave-to{opacity:0}
+.modal-enter-active, .modal-leave-active { transition: opacity 0.2s ease }
+.modal-enter-from,  .modal-leave-to    { opacity: 0 }
 </style>

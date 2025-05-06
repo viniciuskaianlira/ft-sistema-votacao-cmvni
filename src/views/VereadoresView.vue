@@ -24,9 +24,12 @@
 
     <!-- Detalhes -->
     <BaseDetail
-      v-if="showModal && selectedVereadorId != null"
       v-model:visible="showModal"
-      :vereador-id="selectedVereadorId"
+      resource-endpoint="/vereador"
+      :resource-id="selectedVereadorId"
+      title-field="nome"
+      :fields="detailFields"
+      :sections="detailSections"
     />
 
     <!-- Criação -->
@@ -38,15 +41,15 @@
       @saved="onCreated"
     />
 
-    <!-- Edição via RegistroEditor com modal interno -->
+    <!-- Edição via modal interno -->
     <BaseFormEdit
       v-model:visible="showEdit"
       title="Editar Vereador"
       endpoint="/vereador"
-      :recordId="selectedVereadorId"
+      :record-id="selectedVereadorId"
       :fields="editFields"
       @saved="onEdited"
-      @error="onErro"
+      @error="onError"
     />
   </div>
 </template>
@@ -55,35 +58,35 @@
 import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
 
-import BaseList from '@/components/crud/BaseList.vue'
-import BaseDetail from '@/components/crud/BaseDetail.vue'
+import BaseList       from '@/components/crud/BaseList.vue'
+import BaseDetail     from '@/components/crud/BaseDetail.vue'
 import BaseFormCreate from '@/components/crud/BaseFormCreate.vue'
-import BaseFormEdit from '@/components/crud/BaseFormEdit.vue'
+import BaseFormEdit   from '@/components/crud/BaseFormEdit.vue'
 
 import vereadoresService from '@/services/vereadoresService'
 
 const toast = useToast()
 
 const columns = [
-  { label: 'ID', field: 'id' },
-  { label: 'Nome', field: 'nome' },
-  { label: 'Partido', field: 'partido' },
+  { label: 'ID',            field: 'id' },
+  { label: 'Nome',          field: 'nome' },
+  { label: 'Partido',       field: 'partido' },
   { label: 'Sigla Partido', field: 'sigla_partido' },
-  { label: 'Ativo', field: 'ativo' }
+  { label: 'Ativo',         field: 'ativo' }
 ]
 
-const reloadKey = ref(0)
-const showModal = ref(false)
-const showCreate = ref(false)
-const showEdit = ref(false)
-const selectedVereadorId = ref(null)
+const reloadKey           = ref(0)
+const showModal           = ref(false)
+const showCreate          = ref(false)
+const showEdit            = ref(false)
+const selectedVereadorId  = ref(null)
 
 const createFields = [
-  { name: 'nome',          label: 'Nome Completo',    type: 'text',      placeholder: 'Digite o nome' },
-  { name: 'username',      label: 'Usuário',          type: 'text',      placeholder: 'Digite o usuário' },
-  { name: 'password',      label: 'Senha Temporária', type: 'password',  placeholder: 'Digite a senha' },
-  { name: 'partido',       label: 'Partido',          type: 'text',      placeholder: 'Digite o partido' },
-  { name: 'sigla_partido', label: 'Sigla do Partido', type: 'text',      placeholder: 'Digite a sigla' },
+  { name: 'nome',          label: 'Nome Completo',    type: 'text',     placeholder: 'Digite o nome' },
+  { name: 'username',      label: 'Usuário',          type: 'text',     placeholder: 'Digite o usuário' },
+  { name: 'password',      label: 'Senha Temporária', type: 'password', placeholder: 'Digite a senha' },
+  { name: 'partido',       label: 'Partido',          type: 'text',     placeholder: 'Digite o partido' },
+  { name: 'sigla_partido', label: 'Sigla do Partido', type: 'text',     placeholder: 'Digite a sigla' },
   {
     name: 'legislatura_id',
     label: 'Legislatura',
@@ -95,8 +98,8 @@ const createFields = [
 ]
 
 const editFields = [
-  { name: 'partido',       label: 'Partido',          type: 'text',     placeholder: 'Digite o partido' },
-  { name: 'sigla_partido', label: 'Sigla Partido',    type: 'text',     placeholder: 'Digite a sigla', maxLength: 10 },
+  { name: 'partido',       label: 'Partido',       type: 'text',  placeholder: 'Digite o partido' },
+  { name: 'sigla_partido', label: 'Sigla Partido', type: 'text',  placeholder: 'Digite a sigla', maxLength: 10 },
   {
     name: 'legislatura_id',
     label: 'Legislatura',
@@ -115,6 +118,38 @@ const editFields = [
     ]
   }
 ]
+
+const detailFields = [
+        { label: 'Partido', key: 'partido' },
+        { label: 'Ativo', key: 'ativo' }
+      ]
+
+const detailSections = [
+        {
+          title: 'Legislaturas',
+          endpoint: 'legislaturas',
+          itemKey: 'legislaturas',
+          labelKey: 'numero',
+          displayType: 'table',
+          columns: [
+            { label: 'Número',    key: 'numero' },
+            { label: 'Início',    key: 'data_inicio' },
+            { label: 'Término',   key: 'data_fim' }
+          ]
+        },
+        {
+          title: 'Indicações',
+          endpoint: 'indicacoes',
+          itemKey: 'indicacoes',
+          labelKey: 'titulo',
+          displayType: 'table',
+          columns: [
+            { label: 'Número', key: 'numero' },
+            { label: 'Texto', key: 'texto' },
+            { label: 'Data', key: 'data_criacao' }
+          ]
+        }
+      ]
 
 // ---- Ações ----
 
@@ -152,8 +187,14 @@ function onEdited() {
   showEdit.value = false
 }
 
-function onErro(err) {
+function onError(err) {
   console.error(err)
   toast.error('Erro ao carregar ou salvar o vereador.')
 }
 </script>
+
+<style>
+  button {
+  cursor: pointer;
+}
+</style>

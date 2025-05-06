@@ -3,7 +3,7 @@ import axios from 'axios';
 export async function fetchMenu() {
   try {
     const token = localStorage.getItem('token');
-    console.log('Token vindo do localStorage:', token);
+    // console.log('Token vindo do localStorage:', token);
 
     const response = await axios.get('http://localhost:3000/api/menu', {
       headers: {
