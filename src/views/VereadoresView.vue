@@ -91,9 +91,13 @@ const createFields = [
   }
 ]
 
+
+// { name: 'descricao', label: 'Descrição', type: 'text', maxLength: 50 }
+
+
 const editFields = [
   { name: 'partido',       label: 'Partido',          type: 'text',     placeholder: 'Digite o partido' },
-  { name: 'sigla_partido', label: 'Sigla Partido',    type: 'text',     placeholder: 'Digite a sigla' },
+  { name: 'sigla_partido', label: 'Sigla Partido',    type: 'text',     placeholder: 'Digite a sigla', maxLength: 10 },
   {
     name: 'legislatura_id',
     label: 'Legislatura',
