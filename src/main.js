@@ -1,6 +1,6 @@
 import { createApp } from 'vue';
 import App from './App.vue';
-import router from './router';
+import router from './router/index';
 import Toast from "vue-toastification";
 // Importar o CSS da biblioteca de toast
 import "vue-toastification/dist/index.css";

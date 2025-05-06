@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 bg-white min-h-full">
+  <div class="p-6 bg-gray-100 min-h-screen">
     <h1 class="text-2xl font-semibold mb-6">Relatório de Presença da Sessão</h1>
 
     <!-- Seleção da Sessão -->
@@ -19,12 +19,10 @@
       </select>
     </div>
 
-    <!-- Conteúdo do Relatório -->
     <div v-if="loadingRelatorio" class="text-center py-10">
-      <p>Carregando relatório...</p>
-      <!-- Adicionar spinner -->
+      <p class="text-gray-600">Carregando relatório...</p>
     </div>
-    <div v-else-if="errorRelatorio" class="text-red-600">
+    <div v-else-if="errorRelatorio" class="text-red-600 p-4">
       <p>Erro ao carregar relatório: {{ errorRelatorio }}</p>
     </div>
     <div v-else-if="relatorioData" class="border rounded-lg shadow-sm overflow-hidden">
@@ -32,13 +30,13 @@
       <div class="bg-gray-50 p-4 border-b">
         <h2 class="text-xl font-semibold">Sessão {{ getTipoSessaoNome(relatorioData.sessaoInfo.tipo_sessao_id) }} - {{ formatDateTime(relatorioData.sessaoInfo.data_sessao, relatorioData.sessaoInfo.hora_inicio) }}</h2>
         <div class="mt-4 flex space-x-3">
-          <button @click="exportRelatorio('pdf')" :disabled="exporting" class="px-4 py-2 bg-red-500 text-white rounded text-sm hover:bg-red-600 disabled:opacity-50">
+          <button @click="exportRelatorio('pdf')" :disabled="exporting" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50 transition">
             {{ exporting ? 'Exportando PDF...' : 'Exportar PDF' }}
           </button>
-          <button @click="exportRelatorio('xlsx')" :disabled="exporting" class="px-4 py-2 bg-green-500 text-white rounded text-sm hover:bg-green-600 disabled:opacity-50">
+          <button @click="exportRelatorio('xlsx')" :disabled="exporting" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50 transition">
              {{ exporting ? 'Exportando Excel...' : 'Exportar Excel' }}
           </button>
-        </div>
+         </div>
       </div>
 
       <!-- Lista de Presentes -->
@@ -78,7 +76,7 @@
         <p v-else class="text-gray-500">Nenhum vereador ausente registrado.</p>
       </div>
 
-    </div>
+      </div>
      <div v-else-if="selectedSessaoId" class="p-4 text-gray-500">
         Nenhum dado de presença encontrado para a sessão selecionada.
     </div>
@@ -203,8 +201,3 @@ const exportRelatorio = async (formato) => {
 };
 
 </script>
-
-<style scoped>
-/* Estilos adicionais se necessário */
-</style>
-

@@ -1,14 +1,14 @@
 <template>
-  <div class="p-6 bg-white min-h-full">
-    <h1 class="text-2xl font-semibold mb-6">Gerenciar Projetos</h1>
+  <div class="p-6 bg-gray-50 min-h-screen">
+    <h1 class="text-2xl font-bold mb-6">Gerenciar Projetos</h1>
 
     <!-- Formulário para Adicionar/Editar Projeto -->
-    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-gray-50">
-      <h2 class="text-xl font-semibold mb-4">{{ isEditing ? 'Editar Projeto' : 'Adicionar Novo Projeto' }}</h2>
+    <div class="mb-8 p-6 border rounded-lg shadow-md bg-white">
+      <h2 class="text-lg font-semibold mb-4">{{ isEditing ? 'Editar Projeto' : 'Adicionar Novo Projeto' }}</h2>
       <Form @submit="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting, resetForm: veeResetForm }">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label for="titulo" class="block text-sm font-medium text-gray-700 mb-1">Título</label>
+            <label for="titulo" class="block text-sm font-medium text-gray-700">Título</label>
             <Field
               name="titulo"
               type="text"
@@ -20,7 +20,7 @@
             <ErrorMessage name="titulo" class="text-red-500 text-sm mt-1" />
           </div>
           <div>
-            <label for="tipoProjeto" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Projeto</label>
+            <label for="tipoProjeto" class="block text-sm font-medium text-gray-700">Tipo de Projeto</label>
             <Field
               name="tipoProjeto"
               as="select"
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="mb-4">
-          <label for="descricao" class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+          <label for="descricao" class="block text-sm font-medium text-gray-700">Descrição</label>
           <Field
             name="descricao"
             as="textarea"
@@ -51,13 +51,13 @@
 
         <!-- Seleção de Proponentes -->
         <div class="mb-4">
-          <label for="proponentes" class="block text-sm font-medium text-gray-700 mb-1">Proponentes</label>
+          <label for="proponentes" class="block text-sm font-medium text-gray-700">Proponentes</label>
           <Field
             name="proponentes"
             as="select"
             id="proponentes"
             multiple
-            v-model="currentProject.proponentes"
+            v-model="currentProject.proponentes"            
             class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white h-32"
             :class="{ 'border-red-500 focus:ring-red-400': errors.proponentes, 'focus:ring-blue-400': !errors.proponentes }"
           >
@@ -71,12 +71,12 @@
             type="button"
             @click="resetForm(veeResetForm)"
             v-if="isEditing"
-            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200"
+            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
           >
             Cancelar Edição
           </button>
           <button
-            type="submit"
+            type="submit"            
             :disabled="isSubmitting"
             class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -88,16 +88,16 @@
     </div>
 
     <!-- Listagem de Projetos -->
-    <h2 class="text-xl font-semibold mb-4">Projetos Cadastrados</h2>
+    <h2 class="text-lg font-bold mb-4">Projetos Cadastrados</h2>
     <div v-if="loading">Carregando projetos...</div>
-    <div v-else-if="projetos.length === 0">Nenhum projeto cadastrado.</div>
-    <ul v-else class="space-y-3">
-      <li v-for="projeto in projetos" :key="projeto.id" class="p-4 border rounded-lg flex justify-between items-center">
+    <div v-else-if="projetos.length === 0" class="text-gray-500">Nenhum projeto cadastrado.</div>
+    <ul v-else class="space-y-3 divide-y divide-gray-200">
+      <li v-for="projeto in projetos" :key="projeto.id" class="p-4 flex justify-between items-center">
         <div>
-          <span class="font-medium">{{ projeto.titulo }}</span>
+          <span class="font-medium text-gray-800">{{ projeto.titulo }}</span>
           <span class="text-sm text-gray-500 ml-2">({{ getTipoNome(projeto.tipo_projeto_id) }})</span>
         </div>
-        <div class="space-x-2">
+        <div class="space-x-2 flex">
           <button @click="openFileManager(projeto)" class="text-green-500 hover:text-green-700 text-sm">Arquivos</button>
           <button @click="editProject(projeto)" class="text-blue-500 hover:text-blue-700 text-sm">Editar</button>
           <button @click="deleteProject(projeto.id)" class="text-red-500 hover:text-red-700 text-sm">Excluir</button>
@@ -105,27 +105,29 @@
       </li>
     </ul>
 
-    <!-- Modal Gerenciador de Arquivos -->
+    <!-- Modal Gerenciador de Arquivos -->    
     <div v-if="showFileManager" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-      <div class="relative mx-auto p-6 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+      <div class="relative mx-auto p-6 border w-full max-w-3xl shadow-xl rounded-md bg-white">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-xl font-semibold">Gerenciar Arquivos - {{ fileManagerProject?.titulo }}</h3>
+          <h3 class="text-lg font-bold">Gerenciar Arquivos - {{ fileManagerProject?.titulo }}</h3>
           <button @click="closeFileManager" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
         </div>
         <div class="mb-4">
-          <label for="fileUpload" class="block text-sm font-medium text-gray-700 mb-1">Adicionar Novo Arquivo</label>
-          <input type="file" id="fileUpload" @change="handleFileUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
-          <button @click="uploadFile" :disabled="!selectedFile || uploadingFile" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50">
-            {{ uploadingFile ? 'Enviando...' : 'Enviar Arquivo' }}
-          </button>
-        </div>
+          <label for="fileUpload" class="block text-sm font-medium text-gray-700 mb-2">Adicionar Novo Arquivo</label>
+          <div class="flex items-center gap-4">
+            <input type="file" id="fileUpload" @change="handleFileUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+            <button @click="uploadFile" :disabled="!selectedFile || uploadingFile" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50">
+              {{ uploadingFile ? 'Enviando...' : 'Enviar Arquivo' }}
+            </button>
+          </div>
+        </div>        
         <div>
-          <h4 class="text-lg font-medium mb-2">Arquivos Anexados</h4>
-          <div v-if="loadingFiles">Carregando arquivos...</div>
-          <ul v-else-if="projectFiles.length > 0" class="space-y-2 max-h-60 overflow-y-auto">
-            <li v-for="file in projectFiles" :key="file.id" class="flex justify-between items-center p-2 border rounded">
-              <a :href="file.url" target="_blank" class="text-blue-600 hover:underline truncate mr-4">{{ file.nome_original || 'Arquivo sem nome' }}</a>
-              <button @click="deleteFile(file.id)" class="text-red-500 hover:text-red-700 text-sm">Excluir</button>
+          <h4 class="text-lg font-bold mb-2">Arquivos Anexados</h4>
+          <div v-if="loadingFiles" class="text-center">Carregando arquivos...</div>
+          <ul v-else-if="projectFiles.length > 0" class="space-y-2 max-h-96 overflow-y-auto">
+            <li v-for="file in projectFiles" :key="file.id" class="flex justify-between items-center border p-2 rounded-md">
+              <a :href="file.url" target="_blank" class="text-blue-600 hover:underline truncate">{{ file.nome_original || 'Arquivo sem nome' }}</a>
+              <button @click="deleteFile(file.id)" class="text-red-500 hover:text-red-700">Excluir</button>
             </li>
           </ul>
           <p v-else class="text-gray-500">Nenhum arquivo anexado.</p>
@@ -133,7 +135,7 @@
       </div>
     </div>
 
-  </div>
+  </div>  
 </template>
 
 <script setup>
@@ -364,12 +366,4 @@ const deleteFile = async (fileId) => {
 };
 
 </script>
-
-<style scoped>
-/* Estilos adicionais podem ser adicionados aqui */
-select[multiple] {
-  /* Garante que o select múltiplo tenha uma altura mínima */
-  min-height: 8rem; /* Ajuste conforme necessário */
-}
-</style>
 

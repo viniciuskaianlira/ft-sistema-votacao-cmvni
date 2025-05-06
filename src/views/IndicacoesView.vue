@@ -1,13 +1,13 @@
 <template>
-  <div class="p-6 bg-white min-h-full">
-    <h1 class="text-2xl font-semibold mb-6">Gerenciar Indicações</h1>
+  <div class="p-6 bg-gray-50 min-h-screen">
+    <h1 class="text-2xl font-bold mb-6">Gerenciar Indicações</h1>
 
     <!-- Formulário para Adicionar/Editar Indicação -->
-    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-gray-50">
-      <h2 class="text-xl font-semibold mb-4">{{ isEditing ? 'Editar Indicação' : 'Registrar Nova Indicação' }}</h2>
+    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-white">
+      <h2 class="text-xl font-bold mb-4">{{ isEditing ? 'Editar Indicação' : 'Registrar Nova Indicação' }}</h2>
       <Form @submit="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting, resetForm: veeResetForm }">
         <!-- Campos Principais -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
             <label for="numero" class="block text-sm font-medium text-gray-700 mb-1">Número</label>
             <Field name="numero" type="number" id="numero" v-model="currentIndicacao.numero" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white" :class="{ 'border-red-500 focus:ring-red-400': errors.numero, 'focus:ring-blue-400': !errors.numero }"/>
@@ -19,7 +19,7 @@
             <ErrorMessage name="ano" class="text-red-500 text-sm mt-1" />
           </div>
           <div>
-            <label for="data" class="block text-sm font-medium text-gray-700 mb-1">Data</label>
+            <label for="data" class="block text-sm font-medium text-gray-700 mb-1">Data</label> 
             <Field name="data" type="date" id="data" v-model="currentIndicacao.data" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white" :class="{ 'border-red-500 focus:ring-red-400': errors.data, 'focus:ring-blue-400': !errors.data }"/>
             <ErrorMessage name="data" class="text-red-500 text-sm mt-1" />
           </div>
@@ -31,13 +31,13 @@
         </div>
 
         <!-- Seleção de Proponentes -->
-        <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Proponente(s)</label>
-          <div v-if="loadingVereadores">Carregando vereadores...</div>
-          <div v-else class="max-h-40 overflow-y-auto border rounded-md p-2 bg-white">
-            <div v-for="vereador in vereadores" :key="vereador.id" class="flex items-center mb-1">
-              <Field 
-                type="checkbox" 
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Proponente(s)</label>
+          <div v-if="loadingVereadores" class="text-gray-600">Carregando vereadores...</div>
+          <div v-else class="max-h-40 overflow-y-auto border rounded-md p-2 bg-white shadow-inner">
+            <div v-for="vereador in vereadores" :key="vereador.id" class="flex items-center py-1">
+              <Field
+                type="checkbox"
                 :name="`proponentes`" 
                 :id="`vereador_${vereador.id}`" 
                 :value="vereador.id" 
@@ -52,8 +52,8 @@
 
         <!-- Botões do formulário -->
         <div class="flex justify-end space-x-3">
-          <button type="button" @click="resetForm(veeResetForm)" v-if="isEditing" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200">Cancelar Edição</button>
-          <button type="submit" :disabled="isSubmitting" class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          <button type="button" @click="resetForm(veeResetForm)" v-if="isEditing" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200 disabled:opacity-50">Cancelar Edição</button>
+          <button type="submit" :disabled="isSubmitting" class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed ">
             <span v-if="isSubmitting">Salvando...</span>
             <span v-else>{{ isEditing ? 'Salvar Alterações' : 'Registrar Indicação' }}</span>
           </button>
@@ -61,12 +61,12 @@
       </Form>
     </div>
 
-    <!-- Listagem de Indicações -->
-    <h2 class="text-xl font-semibold mb-4">Indicações Registradas</h2>
-    <div v-if="loading">Carregando indicações...</div>
-    <div v-else-if="indicacoes.length === 0">Nenhuma indicação registrada.</div>
-    <ul v-else class="space-y-4">
-      <li v-for="indicacao in indicacoes" :key="indicacao.id" class="p-4 border rounded-lg shadow-sm">
+    <!-- Listagem de Indicações --> 
+    <h2 class="text-xl font-bold mb-4">Indicações Registradas</h2>
+    <div v-if="loading" class="text-center py-4">Carregando indicações...</div>
+    <div v-else-if="indicacoes.length === 0" class="text-center py-4">Nenhuma indicação registrada.</div>
+    <ul v-else class="space-y-4 ">
+      <li v-for="indicacao in indicacoes" :key="indicacao.id" class="p-4 border rounded-lg shadow-sm bg-white">
         <div class="flex justify-between items-start mb-2">
           <div>
             <p class="font-medium text-lg">Indicação Nº {{ indicacao.numero }}/{{ indicacao.ano }}</p>
@@ -86,17 +86,17 @@
     <!-- Modal para Gerenciar Arquivos -->
     <div v-if="showFilesModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
       <div class="relative p-8 border w-full max-w-xl shadow-lg rounded-md bg-white">
-        <h3 class="text-2xl font-semibold mb-4">Arquivos da Indicação {{ selectedIndicacao?.numero }}/{{ selectedIndicacao?.ano }}</h3>
+        <h3 class="text-2xl font-bold mb-4">Arquivos da Indicação {{ selectedIndicacao?.numero }}/{{ selectedIndicacao?.ano }}</h3>
         <button @click="closeFilesModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
         
         <!-- Upload de Arquivo -->
         <div class="mb-6">
           <label for="fileUpload" class="block text-sm font-medium text-gray-700 mb-1">Adicionar Novo Arquivo</label>
-          <input type="file" id="fileUpload" @change="handleFileChange" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+          <input type="file" id="fileUpload" @change="handleFileChange" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 shadow-inner"/>
           <button 
             @click="uploadFile" 
             :disabled="!selectedFile || uploadingFile"
-            class="mt-2 px-4 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="mt-2 px-4 py-1 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed "
           >
             <span v-if="uploadingFile">Enviando...</span>
             <span v-else>Enviar Arquivo</span>
@@ -104,13 +104,13 @@
         </div>
 
         <!-- Lista de Arquivos -->
-        <div v-if="loadingFiles">Carregando arquivos...</div>
-        <ul v-else-if="indicacaoFiles.length > 0" class="space-y-2 max-h-60 overflow-y-auto border-t pt-4">
+        <div v-if="loadingFiles" class="text-center py-4">Carregando arquivos...</div>
+        <ul v-else-if="indicacaoFiles.length > 0" class="space-y-2 max-h-60 overflow-y-auto border-t pt-4 shadow-inner">
           <li v-for="file in indicacaoFiles" :key="file.id" class="flex justify-between items-center text-sm">
-            <a :href="file.url" target="_blank" class="text-blue-600 hover:underline truncate mr-4">{{ file.nome_original }}</a>
-            <button @click="deleteFile(file.id)" class="text-red-500 hover:text-red-700 text-xs">Excluir</button>
+            <a :href="file.url" target="_blank" class="text-blue-600 hover:underline truncate mr-4 ">{{ file.nome_original }}</a>
+            <button @click="deleteFile(file.id)" class="text-red-500 hover:text-red-700 text-xs ">Excluir</button>
           </li>
-        </ul>
+        </ul> 
         <p v-else class="text-sm text-gray-500 border-t pt-4">Nenhum arquivo anexado.</p>
       </div>
     </div>
@@ -345,8 +345,3 @@ const deleteFile = async (arquivoId) => {
 };
 
 </script>
-
-<style scoped>
-/* Estilos adicionais */
-</style>
-

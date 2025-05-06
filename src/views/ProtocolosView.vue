@@ -1,22 +1,22 @@
 <template>
-  <div class="p-6 bg-white min-h-full">
-    <h1 class="text-2xl font-semibold mb-6">Gerenciar Protocolos</h1>
+  <div class="p-6 bg-gray-50 min-h-screen">
+    <h1 class="text-2xl font-bold mb-6">Gerenciar Protocolos</h1>
 
     <!-- Formulário para Adicionar/Editar Protocolo -->
-    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-gray-50">
+    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-white">
       <h2 class="text-xl font-semibold mb-4">{{ isEditing ? 'Editar Protocolo' : 'Registrar Novo Protocolo' }}</h2>
       <Form @submit="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting, resetForm: veeResetForm }">
         <!-- Campos do formulário (número, ano, data, origem, tipo, assunto) -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
-            <label for="numero" class="block text-sm font-medium text-gray-700 mb-1">Número</label>
-            <Field name="numero" type="number" id="numero" v-model="currentProtocolo.numero" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white" :class="{ 'border-red-500 focus:ring-red-400': errors.numero, 'focus:ring-blue-400': !errors.numero }"/>
-            <ErrorMessage name="numero" class="text-red-500 text-sm mt-1" />
+            <label for="numero" class="block text-sm font-medium text-gray-700 mb-2">Número</label>
+            <Field name="numero" type="number" id="numero" v-model="currentProtocolo.numero" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2" :class="{ 'border-red-500 focus:ring-red-400': errors.numero, 'focus:ring-blue-400': !errors.numero }"/>
+            <ErrorMessage name="numero" class="text-red-500 text-xs mt-1" />
           </div>
           <div>
-            <label for="ano" class="block text-sm font-medium text-gray-700 mb-1">Ano</label>
-            <Field name="ano" type="number" id="ano" v-model="currentProtocolo.ano" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white" :class="{ 'border-red-500 focus:ring-red-400': errors.ano, 'focus:ring-blue-400': !errors.ano }"/>
-            <ErrorMessage name="ano" class="text-red-500 text-sm mt-1" />
+            <label for="ano" class="block text-sm font-medium text-gray-700 mb-2">Ano</label>
+            <Field name="ano" type="number" id="ano" v-model="currentProtocolo.ano" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2" :class="{ 'border-red-500 focus:ring-red-400': errors.ano, 'focus:ring-blue-400': !errors.ano }"/>
+            <ErrorMessage name="ano" class="text-red-500 text-xs mt-1" />
           </div>
            <div>
             <label for="dataRecebimento" class="block text-sm font-medium text-gray-700 mb-1">Data Recebimento</label>
@@ -26,18 +26,18 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label for="origem" class="block text-sm font-medium text-gray-700 mb-1">Origem</label>
+            <label for="origem" class="block text-sm font-medium text-gray-700 mb-2">Origem</label>
             <Field name="origem" type="text" id="origem" v-model="currentProtocolo.origem" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2" :class="{ 'border-red-500 focus:ring-red-400': errors.origem, 'focus:ring-blue-400': !errors.origem }"/>
-            <ErrorMessage name="origem" class="text-red-500 text-sm mt-1" />
+            <ErrorMessage name="origem" class="text-red-500 text-xs mt-1" />
           </div>
           <div>
-            <label for="tipoDocumento" class="block text-sm font-medium text-gray-700 mb-1">Tipo Documento</label>
+            <label for="tipoDocumento" class="block text-sm font-medium text-gray-700 mb-2">Tipo Documento</label>
             <Field name="tipoDocumento" type="text" id="tipoDocumento" v-model="currentProtocolo.tipo_documento" placeholder="Ex: Ofício, Requerimento, Projeto de Lei" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2" :class="{ 'border-red-500 focus:ring-red-400': errors.tipoDocumento, 'focus:ring-blue-400': !errors.tipoDocumento }"/>
-            <ErrorMessage name="tipoDocumento" class="text-red-500 text-sm mt-1" />
+            <ErrorMessage name="tipoDocumento" class="text-red-500 text-xs mt-1" />
           </div>
         </div>
         <div class="mb-4">
-          <label for="assunto" class="block text-sm font-medium text-gray-700 mb-1">Assunto</label>
+          <label for="assunto" class="block text-sm font-medium text-gray-700 mb-2">Assunto</label>
           <Field name="assunto" as="textarea" id="assunto" rows="3" v-model="currentProtocolo.assunto" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2" :class="{ 'border-red-500 focus:ring-red-400': errors.assunto, 'focus:ring-blue-400': !errors.assunto }"/>
           <ErrorMessage name="assunto" class="text-red-500 text-sm mt-1" />
         </div>
@@ -54,16 +54,16 @@
     </div>
 
     <!-- Listagem de Protocolos -->
-    <h2 class="text-xl font-semibold mb-4">Protocolos Registrados</h2>
-    <div v-if="loading">Carregando protocolos...</div>
-    <div v-else-if="protocolos.length === 0">Nenhum protocolo registrado.</div>
+    <h2 class="text-xl font-bold mb-4">Protocolos Registrados</h2>
+    <div v-if="loading" class="text-center p-4">Carregando protocolos...</div>
+    <div v-else-if="protocolos.length === 0" class="text-center p-4">Nenhum protocolo registrado.</div>
     <ul v-else class="space-y-3">
-      <li v-for="protocolo in protocolos" :key="protocolo.id" class="p-4 border rounded-lg flex justify-between items-start">
+      <li v-for="protocolo in protocolos" :key="protocolo.id" class="p-4 border rounded-lg flex justify-between items-start bg-white hover:bg-gray-50">
         <div>
           <p class="font-medium">{{ protocolo.numero }}/{{ protocolo.ano }} - {{ protocolo.tipo_documento }}</p>
-          <p class="text-sm text-gray-600">Origem: {{ protocolo.origem }}</p>
-          <p class="text-sm text-gray-600">Assunto: {{ protocolo.assunto }}</p>
-          <p class="text-sm text-gray-500 mt-1">Recebido em: {{ formatDate(protocolo.data_recebimento) }}</p>
+          <p class="text-sm text-gray-600 mt-1">Origem: {{ protocolo.origem }}</p>
+          <p class="text-sm text-gray-600 mt-1">Assunto: {{ protocolo.assunto }}</p>
+          <p class="text-xs text-gray-500 mt-1">Recebido em: {{ formatDate(protocolo.data_recebimento) }}</p>
         </div>
         <div class="space-x-2 flex-shrink-0 ml-4">
           <button @click="openHistoryModal(protocolo)" class="text-purple-500 hover:text-purple-700 text-sm">Histórico</button>
@@ -75,16 +75,16 @@
 
     <!-- Modal para Histórico do Protocolo -->
     <div v-if="showHistoryModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-      <div class="relative p-8 border w-full max-w-2xl shadow-lg rounded-md bg-white">
-        <h3 class="text-2xl font-semibold mb-4">Histórico do Protocolo {{ selectedProtocolo?.numero }}/{{ selectedProtocolo?.ano }}</h3>
-        <button @click="closeHistoryModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+      <div class="relative p-8 border w-full max-w-2xl shadow-lg rounded-md bg-white overflow-y-auto max-h-[80vh]">
+        <h3 class="text-2xl font-bold mb-4">Histórico do Protocolo {{ selectedProtocolo?.numero }}/{{ selectedProtocolo?.ano }}</h3>
+        <button @click="closeHistoryModal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
         
-        <div v-if="loadingHistory">Carregando histórico...</div>
+        <div v-if="loadingHistory" class="text-center p-4">Carregando histórico...</div>
         <div v-else>
-          <ul v-if="protocolHistory.length > 0" class="space-y-3 max-h-60 overflow-y-auto mb-6 pr-2 border-b pb-4">
+          <ul v-if="protocolHistory.length > 0" class="space-y-3 max-h-[30vh] overflow-y-auto mb-6 pr-2 border-b pb-4">
             <li v-for="entry in protocolHistory" :key="entry.id" class="text-sm">
               <p><span class="font-medium">{{ formatDate(entry.data_hora, true) }}:</span> {{ entry.descricao }}</p>
-              <p class="text-xs text-gray-500">Por: {{ entry.User?.nome || 'Sistema' }}</p> <!-- Ajustar nome do campo de usuário -->
+              <p class="text-xs text-gray-500 mt-1">Por: {{ entry.User?.nome || 'Sistema' }}</p> <!-- Ajustar nome do campo de usuário -->
             </li>
           </ul>
           <p v-else class="text-sm text-gray-500 mb-6">Nenhum histórico registrado para este protocolo.</p>
@@ -92,19 +92,19 @@
           <!-- Formulário para Adicionar Entrada no Histórico (Opcional) -->
           <Form @submit="handleAddHistoryEntry" :validation-schema="historySchema" v-slot="{ errors, isSubmitting: isAddingHistory, resetForm: resetHistoryForm }">
             <h4 class="text-lg font-semibold mb-2">Adicionar Registro ao Histórico</h4>
-            <div class="mb-3">
-              <label for="historyDescription" class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+            <div class="mb-4">
+              <label for="historyDescription" class="block text-sm font-medium text-gray-700 mb-2">Descrição</label>
               <Field
                 name="descricao"
                 as="textarea"
                 id="historyDescription"
                 rows="2"
-                class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2"
+                class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white"
                 :class="{ 'border-red-500 focus:ring-red-400': errors.descricao, 'focus:ring-blue-400': !errors.descricao }"
               />
-              <ErrorMessage name="descricao" class="text-red-500 text-sm mt-1" />
+              <ErrorMessage name="descricao" class="text-red-500 text-xs mt-1" />
             </div>
-            <div class="flex justify-end">
+            <div class="flex justify-end mt-4">
               <button
                 type="submit"
                 :disabled="isAddingHistory"
@@ -315,10 +315,4 @@ const handleAddHistoryEntry = async (values, { resetForm: resetHistoryForm }) =>
     toast.error(error.response?.data?.message || 'Falha ao adicionar registro ao histórico.');
   }
 };
-
-</script>
-
-<style scoped>
-/* Estilos adicionais */
-</style>
 

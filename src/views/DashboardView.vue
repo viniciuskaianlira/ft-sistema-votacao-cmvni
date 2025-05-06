@@ -27,32 +27,24 @@
       <main class="flex-1 overflow-auto p-6 bg-gray-50">
         <router-view />
       </main>
-    </div>
+     </div>
   </div>
 </template>
-
 <script setup>
-import { ref, onMounted } from 'vue'
-import Sidebar from '@/components/SideBar.vue'
-import TopBar from '@/components/TopBar.vue'
-import { fetchMenu } from '@/services/menuService.js'
+import { ref } from 'vue';
+import Sidebar from '@/components/SideBar.vue';
+import TopBar from '@/components/TopBar.vue';
 
-// State management
-const showSidebar = ref(true)
-const notificationCount = ref(3) // Exemplo fixo; pode vir de API
+const showSidebar = ref(true);
+const notificationCount = ref(3);
 
 function toggleSidebar() {
-  showSidebar.value = !showSidebar.value
+  showSidebar.value = !showSidebar.value;
 }
 
 function logout() {
-  localStorage.removeItem('user')
-  localStorage.removeItem('token')
-  // Redireciona para login
-  window.location.href = '/'
+  localStorage.removeItem('user');
+  localStorage.removeItem('token');
+  window.location.href = '/';
 }
 </script>
-
-<style scoped>
-/* Sem estilos adicionais; tudo via Tailwind */
-</style>

@@ -359,7 +359,7 @@ const pedirVistaHandler = async () => {
 
 </script>
 
-<style scoped>
-/* Estilos adicionais se necessário */
+<style>
+
 </style>
 

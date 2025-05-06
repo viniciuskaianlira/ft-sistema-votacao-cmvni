@@ -1,5 +1,5 @@
 <template>
-  <div class="p-6 bg-white min-h-full">
+  <div class="p-6 bg-gray-50 min-h-screen">
     <h1 class="text-2xl font-semibold mb-6">Relatório de Votos da Sessão</h1>
 
     <!-- Seleção da Sessão -->
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Conteúdo do Relatório -->
-    <div v-if="loadingRelatorio" class="text-center py-10">
+    <div v-if="loadingRelatorio" class="text-center py-10 text-gray-500">
       <p>Carregando relatório...</p>
       <!-- Adicionar spinner -->
     </div>
@@ -29,12 +29,12 @@
     </div>
     <div v-else-if="relatorioData" class="border rounded-lg shadow-sm overflow-hidden">
       <!-- Cabeçalho do Relatório -->
-      <div class="bg-gray-50 p-4 border-b">
+      <div class="bg-gray-100 p-4 border-b">
         <h2 class="text-xl font-semibold">Sessão {{ getTipoSessaoNome(relatorioData.sessaoInfo.tipo_sessao_id) }} - {{ formatDateTime(relatorioData.sessaoInfo.data_sessao, relatorioData.sessaoInfo.hora_inicio) }}</h2>
         <div class="mt-4 flex space-x-3">
-          <button @click="exportRelatorio('pdf')" :disabled="exporting" class="px-4 py-2 bg-red-500 text-white rounded text-sm hover:bg-red-600 disabled:opacity-50">            {{ exporting ? 'Exportando PDF...' : 'Exportar PDF' }}
+          <button @click="exportRelatorio('pdf')" :disabled="exporting" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50">            {{ exporting ? 'Exportando PDF...' : 'Exportar PDF' }}
           </button>
-          <button @click="exportRelatorio('xlsx')" :disabled="exporting" class="px-4 py-2 bg-green-500 text-white rounded text-sm hover:bg-green-600 disabled:opacity-50">
+          <button @click="exportRelatorio('xlsx')" :disabled="exporting" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50">
              {{ exporting ? 'Exportando Excel...' : 'Exportar Excel' }}          </button>
         </div>
       </div>
@@ -51,26 +51,26 @@
             <div class="md:col-span-3"><span class="font-medium">Resultado Final:</span> <span class="font-semibold">{{ itemVotado.resultado.resultado }}</span></div>
           </div>
           
-          <!-- Tabela de Votos Individuais -->
-          <details class="mt-2">
-              <summary class="cursor-pointer text-blue-600 hover:underline text-sm">Ver votos individuais</summary>
-              <div class="mt-2 overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200 text-sm">
-                      <thead class="bg-gray-50">
-                          <tr>
-                              <th scope="col" class="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">Vereador</th>
-                              <th scope="col" class="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">Voto</th>
-                          </tr>
-                      </thead>
-                      <tbody class="bg-white divide-y divide-gray-200">
-                          <tr v-for="voto in itemVotado.votosIndividuais" :key="voto.vereador.id">
-                              <td class="px-4 py-2 whitespace-nowrap">{{ voto.vereador.nome }}</td>
-                              <td class="px-4 py-2 whitespace-nowrap uppercase" :class="votoClass(voto.voto)">{{ voto.voto }}</td>
-                          </tr>
-                      </tbody>
-                  </table>
-              </div>
-          </details>
+          <!-- Table of Individual Votes -->
+        <details class="mt-2">
+          <summary class="cursor-pointer text-blue-600 hover:underline text-sm">Ver votos individuais</summary>
+          <div class="mt-2 overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">Vereador</th>
+                  <th scope="col" class="px-4 py-2 text-left font-medium text-gray-500 uppercase tracking-wider">Voto</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-for="voto in itemVotado.votosIndividuais" :key="voto.vereador.id">
+                  <td class="px-4 py-2 whitespace-nowrap">{{ voto.vereador.nome }}</td>
+                  <td class="px-4 py-2 whitespace-nowrap uppercase" :class="votoClass(voto.voto)">{{ voto.voto }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
         </div>
       </div>
       <div v-else class="p-4 text-gray-500">
@@ -202,21 +202,12 @@ const exportRelatorio = async (formato) => {
 };
 
 </script>
-
-<style scoped>
-/* Estilos adicionais se necessário */
-details > summary {
-  list-style: none; /* Remove default marker */
-}
-details > summary::-webkit-details-marker {
-  display: none; /* Remove default marker in Chrome */
-}
-details > summary::before {
-  content: '►'; /* Add custom marker */
-  margin-right: 0.5em;
-}
-details[open] > summary::before {
-  content: '▼';
-}
+<style>
+  details > summary {
+    list-style: none;
+  }
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
 </style>
 

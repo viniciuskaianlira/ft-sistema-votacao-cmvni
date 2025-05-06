@@ -1,20 +1,20 @@
 <template>
-  <div class="p-6 bg-white min-h-full">
-    <h1 class="text-2xl font-semibold mb-6">Gerenciar Legislaturas</h1>
+  <div class="p-6 bg-gray-50 min-h-screen">
+    <h1 class="text-3xl font-bold mb-6">Gerenciar Legislaturas</h1>
 
     <!-- Formulário para Adicionar/Editar Legislatura -->
-    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-gray-50">
-      <h2 class="text-xl font-semibold mb-4">{{ isEditing ? 'Editar Legislatura' : 'Adicionar Nova Legislatura' }}</h2>
+    <div class="mb-8 p-6 border rounded-lg shadow-md bg-white">
+      <h2 class="text-2xl font-semibold mb-4">{{ isEditing ? 'Editar Legislatura' : 'Adicionar Nova Legislatura' }}</h2>
       <Form @submit="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting }">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
-            <label for="numero" class="block text-sm font-medium text-gray-700 mb-1">Número da Legislatura</label>
+            <label for="numero" class="block text-sm font-medium text-gray-600 mb-1">Número da Legislatura</label>
             <Field
               name="numero"
               type="number"
               id="numero"
               v-model="currentLegislatura.numero"
-              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2"
+              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               :class="{ 'border-red-500 focus:ring-red-400': errors.numero, 'focus:ring-blue-400': !errors.numero }"
             />
             <ErrorMessage name="numero" class="text-red-500 text-sm mt-1" />
@@ -26,7 +26,7 @@
               type="date"
               id="data_inicio"
               v-model="currentLegislatura.data_inicio"
-              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white"
+              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
               :class="{ 'border-red-500 focus:ring-red-400': errors.data_inicio, 'focus:ring-blue-400': !errors.data_inicio }"
             />
             <ErrorMessage name="data_inicio" class="text-red-500 text-sm mt-1" />
@@ -38,7 +38,7 @@
               type="date"
               id="data_fim"
               v-model="currentLegislatura.data_fim"
-              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white"
+              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
               :class="{ 'border-red-500 focus:ring-red-400': errors.data_fim, 'focus:ring-blue-400': !errors.data_fim }"
             />
             <ErrorMessage name="data_fim" class="text-red-500 text-sm mt-1" />
@@ -50,14 +50,13 @@
             type="button"
             @click="resetForm"
             v-if="isEditing"
-            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200"
+            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 transition duration-200"
           >
             Cancelar Edição
           </button>
           <button
             type="submit"
-            :disabled="isSubmitting"
-            class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <span v-if="isSubmitting">Salvando...</span>
             <span v-else>{{ isEditing ? 'Salvar Alterações' : 'Adicionar Legislatura' }}</span>
@@ -67,18 +66,18 @@
     </div>
 
     <!-- Listagem de Legislaturas -->
-    <h2 class="text-xl font-semibold mb-4">Legislaturas Cadastradas</h2>
-    <div v-if="loading">Carregando legislaturas...</div>
-    <div v-else-if="legislaturas.length === 0">Nenhuma legislatura cadastrada.</div>
-    <ul v-else class="space-y-3">
-      <li v-for="legislatura in legislaturas" :key="legislatura.id" class="p-4 border rounded-lg flex justify-between items-center">
+    <h2 class="text-2xl font-semibold mb-4">Legislaturas Cadastradas</h2>
+    <div v-if="loading" class="text-center py-4">Carregando legislaturas...</div>
+    <div v-else-if="legislaturas.length === 0" class="text-center py-4">Nenhuma legislatura cadastrada.</div>
+    <ul v-else class="space-y-4">
+      <li v-for="legislatura in legislaturas" :key="legislatura.id" class="p-4 border rounded-lg shadow-sm bg-white flex justify-between items-center">
         <div>
-          <p class="font-medium">{{ legislatura.numero }}ª Legislatura</p>
+          <p class="font-medium text-gray-800">{{ legislatura.numero }}ª Legislatura</p>
           <p class="text-sm text-gray-600">Período: {{ formatDate(legislatura.data_inicio) }} - {{ formatDate(legislatura.data_fim) }}</p>
         </div>
-        <div class="space-x-2 flex-shrink-0 ml-4">
-          <button @click="editLegislatura(legislatura)" class="text-blue-500 hover:text-blue-700 text-sm">Editar</button>
-          <button @click="deleteLegislatura(legislatura.id)" class="text-red-500 hover:text-red-700 text-sm">Excluir</button>
+        <div class="space-x-3 flex-shrink-0 ml-4">
+          <button @click="editLegislatura(legislatura)" class="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">Editar</button>
+          <button @click="deleteLegislatura(legislatura.id)" class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white rounded text-sm focus:outline-none focus:ring-2 focus:ring-red-400">Excluir</button>
         </div>
       </li>
     </ul>
@@ -207,8 +206,3 @@ const deleteLegislatura = async (id) => {
 };
 
 </script>
-
-<style scoped>
-/* Estilos adicionais podem ser adicionados aqui */
-</style>
-

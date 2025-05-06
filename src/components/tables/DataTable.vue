@@ -1,6 +1,12 @@
 <template>
   <div>
-    <div v-if="loading" class="text-center p-4">Carregando dados...</div>
+    <div class="flex items-center justify-between mb-4">
+      <div v-if="filterableFields && filterableFields.length">
+        <input type="text" v-model="filterText" placeholder="Filtrar por nome ou partido..." class="border border-gray-300 rounded px-2 py-1" />
+      </div>
+      <div v-if="loading" class="text-center p-4">Carregando dados...</div>
+    </div>
+    
     <div v-else-if="error" class="text-red-500 p-4">Erro ao carregar dados.</div>
 
     <table
@@ -20,7 +26,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="(row, rowIndex) in rows"
+          v-for="(row, rowIndex) in filteredRows"
           :key="rowIndex"
           class="hover:bg-gray-50"
         >
@@ -75,7 +81,16 @@ const props = defineProps({
   showActions: {
     type: Boolean,
     default: false
+  },
+  /**
+   * Array de campos filtráveis
+   */
+  filterableFields: {
+    type: Array,
+    default: () => []
   }
+
+
 })
 
 const emit = defineEmits(['view', 'edit', 'delete'])
@@ -83,6 +98,8 @@ const rows = ref([])
 const loading = ref(false)
 const error = ref(false)
 const toast = useToast()
+const filterText = ref('')
+const filteredRows = ref([])
 
 // Colunas dinâmicas: props.columns ou chaves do primeiro registro
 const baseColumns = computed(() => {
@@ -112,6 +129,7 @@ async function fetchData() {
     const response = await api.get(props.endpoint)
     const data = response.data
     rows.value = Array.isArray(data) ? data : data.data || []
+    filteredRows.value = [...rows.value]
   } catch (err) {
     error.value = true
     toast.error('Erro ao carregar dados: ' + (err.response?.data?.message || err.message))
@@ -122,6 +140,24 @@ async function fetchData() {
 
 onMounted(fetchData)
 watch(() => props.endpoint, fetchData)
+
+watch(filterText, (newValue) => {
+  if (newValue === '') {
+    filteredRows.value = [...rows.value]
+    return
+  }
+
+  const lowerCaseFilter = newValue.toLowerCase()
+
+  filteredRows.value = rows.value.filter(row => {
+    return props.filterableFields.some(field => {
+      const rowValue = String(row[field]).toLowerCase()
+      return rowValue.includes(lowerCaseFilter)
+    })
+  })
+
+})
+
 </script>
 
 <style scoped>

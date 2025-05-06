@@ -8,7 +8,7 @@
         v-slot="{ errors, isSubmitting, handleSubmit }"
         class="space-y-4"
       >
-        <!-- Campo Usuário -->
+        <!-- Campo Usuário-->
         <div>
           <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
             Usuário
@@ -102,7 +102,5 @@ async function onSubmit(values) {
   }
 }
 </script>
-
-<style scoped>
-/* estilos adicionais, se necessário */
+<style>
 </style>

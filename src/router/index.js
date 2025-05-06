@@ -1,6 +1,7 @@
 // src/router/index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView     from '@/views/LoginView.vue'
+import { checkAuth } from '@/router/guards'
 import DashboardView from '@/views/DashboardView.vue'
 import InicioView    from '@/views/InicioView.vue'
 import AtoView       from '@/views/AtoView.vue'
@@ -32,6 +33,7 @@ const routes = [
     path: '/dashboard',
     name: 'Dashboard',
     component: DashboardView,
+    beforeEnter: checkAuth,
     meta: { requiresAuth: true },
     children: [
       {
@@ -124,13 +126,5 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
-
-router.beforeEach((to, from, next) => {
-  const user = getUser()
-  if (to.meta.requiresAuth && !user) {
-    return next({ name: 'Login' })
-  }
-  next()
-})
-
+    
 export default router

@@ -1,12 +1,12 @@
 <template>
-  <div class="p-6 bg-white min-h-full">
-    <h1 class="text-2xl font-semibold mb-6">Gerenciar Sessões</h1>
+  <div class="p-6 bg-gray-50 min-h-screen">
+    <h1 class="text-2xl font-bold mb-6">Gerenciar Sessões</h1>
 
     <!-- Formulário para Agendar/Editar Sessão -->
-    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-gray-50">
-      <h2 class="text-xl font-semibold mb-4">{{ isEditing ? 'Editar Sessão' : 'Agendar Nova Sessão' }}</h2>
+    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-white">
+      <h2 class="text-xl font-bold mb-4">{{ isEditing ? 'Editar Sessão' : 'Agendar Nova Sessão' }}</h2>
       <Form @submit="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting }">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
             <label for="dataSessao" class="block text-sm font-medium text-gray-700 mb-1">Data</label>
             <Field
@@ -14,7 +14,7 @@
               type="date"
               id="dataSessao"
               v-model="currentSessao.data_sessao"
-              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white"
+              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               :class="{ 'border-red-500 focus:ring-red-400': errors.dataSessao, 'focus:ring-blue-400': !errors.dataSessao }"
             />
             <ErrorMessage name="dataSessao" class="text-red-500 text-sm mt-1" />
@@ -26,13 +26,13 @@
               type="time"
               id="horaSessao"
               v-model="currentSessao.hora_inicio"
-              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white"
+              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
               :class="{ 'border-red-500 focus:ring-red-400': errors.horaSessao, 'focus:ring-blue-400': !errors.horaSessao }"
             />
             <ErrorMessage name="horaSessao" class="text-red-500 text-sm mt-1" />
           </div>
         </div>
-        <div class="mb-4">
+        <div class="mb-6">
             <label for="tipoSessao" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Sessão</label>
             <Field
               name="tipoSessao"
@@ -40,7 +40,7 @@
               id="tipoSessao"
               v-model="currentSessao.tipo_sessao_id" 
               class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white"
-              :class="{ 'border-red-500 focus:ring-red-400': errors.tipoSessao, 'focus:ring-blue-400': !errors.tipoSessao }"
+              :class="{ 'border-red-500 focus:ring-red-400': errors.tipoSessao, 'focus:ring-blue-400': !errors.tipoSessao,  }"
             >
               <option value="" disabled>Selecione um tipo</option>
               <option v-for="tipo in tiposSessao" :key="tipo.id" :value="tipo.id">{{ tipo.nome }}</option>
@@ -55,7 +55,7 @@
             id="pauta"
             rows="3"
             v-model="currentSessao.pauta"
-            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2"
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
             :class="{ 'border-red-500 focus:ring-red-400': errors.pauta, 'focus:ring-blue-400': !errors.pauta }"
           />
           <ErrorMessage name="pauta" class="text-red-500 text-sm mt-1" />
@@ -66,7 +66,7 @@
             type="button"
             @click="resetForm"
             v-if="isEditing"
-            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200"
+            class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition"
           >
             Cancelar Edição
           </button>
@@ -74,7 +74,7 @@
             type="submit"
             :disabled="isSubmitting"
             class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          > 
             <span v-if="isSubmitting">Salvando...</span>
             <span v-else>{{ isEditing ? 'Salvar Alterações' : 'Agendar Sessão' }}</span>
           </button>
@@ -83,24 +83,24 @@
     </div>
 
     <!-- Listagem de Sessões Agendadas -->
-    <h2 class="text-xl font-semibold mb-4">Sessões Agendadas</h2>
-    <div v-if="loading">Carregando sessões...</div>
-    <div v-else-if="sessoes.length === 0">Nenhuma sessão agendada.</div>
-    <ul v-else class="space-y-3">
-      <li v-for="sessao in sessoes" :key="sessao.id" class="p-4 border rounded-lg flex justify-between items-center">
+    <h2 class="text-xl font-bold mb-4">Sessões Agendadas</h2>
+    <div v-if="loading" class="text-center p-4">Carregando sessões...</div>
+    <div v-else-if="sessoes.length === 0" class="text-center p-4">Nenhuma sessão agendada.</div>
+    <ul v-else class="space-y-3 bg-white p-4 rounded-lg border">
+      <li v-for="sessao in sessoes" :key="sessao.id" class="p-4 border rounded-lg flex justify-between items-center hover:bg-gray-50">
         <div>
-          <span class="font-medium">{{ formatDateTime(sessao.data_sessao, sessao.hora_inicio) }}</span>
+          <span class="font-semibold">{{ formatDateTime(sessao.data_sessao, sessao.hora_inicio) }}</span>
           <span class="text-sm text-gray-500 ml-2">({{ getTipoSessaoNome(sessao.tipo_sessao_id) }})</span>
           <p class="text-sm text-gray-600 mt-1">{{ sessao.pauta }}</p>
         </div>
         <div class="space-x-2">
           <!-- Adicionar botões para iniciar/controlar sessão se aplicável -->
-          <button @click="editSessao(sessao)" class="text-blue-500 hover:text-blue-700 text-sm">Editar</button>
-          <button @click="deleteSessao(sessao.id)" class="text-red-500 hover:text-red-700 text-sm">Excluir</button>
+          <button @click="editSessao(sessao)" class="text-blue-500 hover:text-blue-700 text-sm transition">Editar</button>
+          <button @click="deleteSessao(sessao.id)" class="text-red-500 hover:text-red-700 text-sm transition">Excluir</button>
         </div>
       </li>
     </ul>
-
+   
   </div>
 </template>
 
@@ -242,8 +242,3 @@ const deleteSessao = async (id) => {
 };
 
 </script>
-
-<style scoped>
-/* Estilos adicionais podem ser adicionados aqui */
-</style>
-

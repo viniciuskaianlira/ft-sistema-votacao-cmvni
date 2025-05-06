@@ -1,14 +1,14 @@
 <template>
-  <div class="p-6 bg-white min-h-full">
+  <div class="p-6 bg-gray-50 min-h-screen">
     <h1 class="text-2xl font-semibold mb-6">Gerenciar Proposições</h1>
 
     <!-- Formulário para Adicionar/Editar Proposição -->
-    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-gray-50">
+    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-white">
       <h2 class="text-xl font-semibold mb-4">{{ isEditing ? 'Editar Proposição' : 'Adicionar Nova Proposição' }}</h2>
       <Form @submit="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting, resetForm: veeResetForm }">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
-            <label for="titulo" class="block text-sm font-medium text-gray-700 mb-1">Título</label>
+            <label for="titulo" class="block text-sm font-medium text-gray-600 mb-1">Título</label>
             <Field
               name="titulo"
               type="text"
@@ -20,7 +20,7 @@
             <ErrorMessage name="titulo" class="text-red-500 text-sm mt-1" />
           </div>
           <div>
-            <label for="tipoProposicao" class="block text-sm font-medium text-gray-700 mb-1">Tipo de Proposição</label>
+            <label for="tipoProposicao" class="block text-sm font-medium text-gray-600 mb-1">Tipo de Proposição</label>
             <Field
               name="tipoProposicao"
               as="select"
@@ -36,7 +36,7 @@
           </div>
         </div>
         <div class="mb-4">
-          <label for="ementa" class="block text-sm font-medium text-gray-700 mb-1">Ementa</label>
+          <label for="ementa" class="block text-sm font-medium text-gray-600 mb-1">Ementa</label>
           <Field
             name="ementa"
             as="textarea"
@@ -51,14 +51,14 @@
 
         <!-- Seleção de Proponentes -->
         <div class="mb-4">
-          <label for="proponentes" class="block text-sm font-medium text-gray-700 mb-1">Proponentes</label>
+          <label for="proponentes" class="block text-sm font-medium text-gray-600 mb-1">Proponentes</label>
           <Field
             name="proponentes"
             as="select"
             id="proponentes"
             multiple
             v-model="currentProposicao.proponentes"
-            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white h-32"
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 bg-white h-32 overflow-y-auto"
             :class="{ 'border-red-500 focus:ring-red-400': errors.proponentes, 'focus:ring-blue-400': !errors.proponentes }"
           >
             <option v-for="vereador in vereadores" :key="vereador.id" :value="vereador.id">{{ vereador.nome }}</option>
@@ -69,7 +69,7 @@
         <div class="flex justify-end space-x-3">
           <button
             type="button"
-            @click="resetForm(veeResetForm)"
+            @click="resetForm(veeResetForm)"            
             v-if="isEditing"
             class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200"
           >
@@ -93,13 +93,13 @@
     <div v-else-if="proposicoes.length === 0">Nenhuma proposição cadastrada.</div>
     <ul v-else class="space-y-3">
       <li v-for="proposicao in proposicoes" :key="proposicao.id" class="p-4 border rounded-lg flex justify-between items-center">
-        <div>
-          <span class="font-medium">{{ proposicao.titulo }}</span>
-          <span class="text-sm text-gray-500 ml-2">({{ getTipoNome(proposicao.tipo_proposicao_id) }})</span>
+         <div>
+          <p class="font-medium">{{ proposicao.titulo }}</p>
+          <span class="text-sm text-gray-500">({{ getTipoNome(proposicao.tipo_proposicao_id) }})</span>
         </div>
-        <div class="space-x-2">
-          <button @click="openFileManager(proposicao)" class="text-green-500 hover:text-green-700 text-sm">Arquivos</button>
-          <button @click="editProposicao(proposicao)" class="text-blue-500 hover:text-blue-700 text-sm">Editar</button>
+        <div class="space-x-4">
+          <button @click="openFileManager(proposicao)" class="text-green-500 hover:text-green-700">Arquivos</button>
+          <button @click="editProposicao(proposicao)" class="text-blue-500 hover:text-blue-700">Editar</button>
           <button @click="deleteProposicao(proposicao.id)" class="text-red-500 hover:text-red-700 text-sm">Excluir</button>
         </div>
       </li>
@@ -108,12 +108,12 @@
     <!-- Modal Gerenciador de Arquivos (Reutilizar ou adaptar o componente de Projetos) -->
     <div v-if="showFileManager" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
        <div class="relative mx-auto p-6 border w-full max-w-2xl shadow-lg rounded-md bg-white">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-xl font-semibold">Gerenciar Arquivos - {{ fileManagerProposicao?.titulo }}</h3>
-          <button @click="closeFileManager" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-semibold">Gerenciar Arquivos - {{ fileManagerProposicao?.titulo }}</h3>
+          <button @click="closeFileManager" class="text-gray-500 hover:text-gray-800 text-3xl">&times;</button>
         </div>
         <div class="mb-4">
-          <label for="fileUpload" class="block text-sm font-medium text-gray-700 mb-1">Adicionar Novo Arquivo</label>
+          <label for="fileUpload" class="block text-sm font-medium text-gray-600 mb-1">Adicionar Novo Arquivo</label>
           <input type="file" id="fileUpload" @change="handleFileUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
           <button @click="uploadFile" :disabled="!selectedFile || uploadingFile" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50">
             {{ uploadingFile ? 'Enviando...' : 'Enviar Arquivo' }}
@@ -124,8 +124,8 @@
           <div v-if="loadingFiles">Carregando arquivos...</div>
           <ul v-else-if="proposicaoFiles.length > 0" class="space-y-2 max-h-60 overflow-y-auto">
             <li v-for="file in proposicaoFiles" :key="file.id" class="flex justify-between items-center p-2 border rounded">
-              <a :href="file.url" target="_blank" class="text-blue-600 hover:underline truncate mr-4">{{ file.nome_original || 'Arquivo sem nome' }}</a>
-              <button @click="deleteFile(file.id)" class="text-red-500 hover:text-red-700 text-sm">Excluir</button>
+              <a :href="file.url" target="_blank" class="text-blue-600 hover:underline truncate mr-4 w-3/4">{{ file.nome_original || 'Arquivo sem nome' }}</a>
+              <button @click="deleteFile(file.id)" class="text-red-500 hover:text-red-700">Excluir</button>
             </li>
           </ul>
           <p v-else class="text-gray-500">Nenhum arquivo anexado.</p>
@@ -362,10 +362,3 @@ const deleteFile = async (fileId) => {
 };
 
 </script>
-
-<style scoped>
-select[multiple] {
-  min-height: 8rem;
-}
-</style>
-

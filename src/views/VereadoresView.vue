@@ -16,6 +16,7 @@
       endpoint="/vereador"
       :columns="columns"
       :showActions="true"
+      :filterableFields="['nome', 'partido']"
       @view="onView"
       @edit="onEdit"
       @delete="onDelete"
@@ -158,14 +159,3 @@ function onErro(err) {
   toast.error('Erro ao carregar ou salvar o vereador.')
 }
 </script>
-
-<style scoped>
-.modal-enter-active,
-.modal-leave-active {
-  transition: opacity 0.2s;
-}
-.modal-enter-from,
-.modal-leave-to {
-  opacity: 0;
-}
-</style>

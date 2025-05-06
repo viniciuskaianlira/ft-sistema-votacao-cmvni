@@ -1,19 +1,19 @@
 <template>
-  <div class="p-6 bg-white min-h-full">
-    <h1 class="text-2xl font-semibold mb-6">Gerenciar Usuários</h1>
+  <div class="p-6 bg-gray-50 min-h-screen">
+    <h1 class="text-2xl font-bold mb-6">Gerenciar Usuários</h1>
 
     <!-- Botão para Adicionar Novo Usuário -->
     <div class="mb-4 flex justify-end">
-      <button @click="openUserModal()" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200">
+      <button @click="openUserModal()" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition">
         Adicionar Usuário
       </button>
     </div>
 
     <!-- Listagem de Usuários -->
-    <div v-if="loadingUsers">Carregando usuários...</div>
-    <div v-else-if="users.length === 0">Nenhum usuário cadastrado.</div>
+    <div v-if="loadingUsers" class="text-center p-4">Carregando usuários...</div>
+    <div v-else-if="users.length === 0" class="text-center p-4">Nenhum usuário cadastrado.</div>
     <div v-else class="overflow-x-auto">
-      <table class="min-w-full bg-white border">
+      <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
         <thead class="bg-gray-100">
           <tr>
             <th class="py-2 px-4 border-b text-left">Nome</th>
@@ -22,13 +22,13 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in users" :key="user.id" class="hover:bg-gray-50">
-            <td class="py-2 px-4 border-b">{{ user.nome }}</td>
-            <td class="py-2 px-4 border-b">{{ user.email }}</td>
-            <td class="py-2 px-4 border-b text-center space-x-2">
-              <button @click="openUserModal(user)" class="text-blue-500 hover:text-blue-700 text-sm">Editar</button>
-              <button @click="openPermissionsModal(user)" class="text-green-500 hover:text-green-700 text-sm">Permissões</button>
-              <button @click="deleteUser(user.id)" class="text-red-500 hover:text-red-700 text-sm">Excluir</button>
+          <tr v-for="user in users" :key="user.id" class="hover:bg-gray-100">
+            <td class="px-4 py-2 border-b">{{ user.nome }}</td>
+            <td class="px-4 py-2 border-b">{{ user.email }}</td>
+            <td class="px-4 py-2 border-b text-center space-x-2">
+              <button @click="openUserModal(user)" class="text-blue-500 hover:text-blue-600 text-sm">Editar</button>
+              <button @click="openPermissionsModal(user)" class="text-green-500 hover:text-green-600 text-sm">Permissões</button>
+              <button @click="deleteUser(user.id)" class="text-red-500 hover:text-red-600 text-sm">Excluir</button>
             </td>
           </tr>
         </tbody>
@@ -36,10 +36,10 @@
     </div>
 
     <!-- Modal para Adicionar/Editar Usuário -->
-    <div v-if="showUserModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-      <div class="relative p-8 border w-full max-w-lg shadow-lg rounded-md bg-white">
-        <h3 class="text-2xl font-semibold mb-6">{{ isEditingUser ? 'Editar Usuário' : 'Adicionar Novo Usuário' }}</h3>
-        <Form @submit="handleUserSubmit" :validation-schema="userSchema" v-slot="{ errors, isSubmitting }">
+    <div v-if="showUserModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="relative p-8 border w-full max-w-lg bg-white rounded">
+        <h3 class="text-2xl font-bold mb-6">{{ isEditingUser ? 'Editar Usuário' : 'Adicionar Novo Usuário' }}</h3>
+        <Form @submit="handleUserSubmit" :validation-schema="userSchema" v-slot="{ errors, isSubmitting }" class="space-y-4">
           <div class="mb-4">
             <label for="nome" class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
             <Field
@@ -47,9 +47,9 @@
               type="text"
               id="nome"
               v-model="currentUser.nome"
-              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2"
+              class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2"
               :class="{ 'border-red-500 focus:ring-red-400': errors.nome, 'focus:ring-blue-400': !errors.nome }"
-            />
+              />
             <ErrorMessage name="nome" class="text-red-500 text-sm mt-1" />
           </div>
           <div class="mb-4">
@@ -59,9 +59,9 @@
               type="email"
               id="email"
               v-model="currentUser.email"
-              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2"
+              class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2"
               :class="{ 'border-red-500 focus:ring-red-400': errors.email, 'focus:ring-blue-400': !errors.email }"
-            />
+              />
             <ErrorMessage name="email" class="text-red-500 text-sm mt-1" />
           </div>
           <div class="mb-4">
@@ -71,13 +71,13 @@
               type="password"
               id="password"
               v-model="currentUser.password"
-              class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2"
+              class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2"
               :class="{ 'border-red-500 focus:ring-red-400': errors.password, 'focus:ring-blue-400': !errors.password }"
-            />
+              />
             <ErrorMessage name="password" class="text-red-500 text-sm mt-1" />
           </div>
           <div class="flex justify-end space-x-3 mt-6">
-            <button type="button" @click="closeUserModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200">
+            <button type="button" @click="closeUserModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
               Cancelar
             </button>
             <button type="submit" :disabled="isSubmitting" class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -90,8 +90,8 @@
     </div>
 
     <!-- Modal para Gerenciar Permissões -->
-    <div v-if="showPermissionsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-      <div class="relative p-8 border w-full max-w-xl shadow-lg rounded-md bg-white">
+    <div v-if="showPermissionsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="relative p-8 border w-full max-w-xl bg-white rounded">
         <h3 class="text-2xl font-semibold mb-6">Gerenciar Permissões para {{ currentUser.nome }}</h3>
         <div v-if="loadingPermissions">Carregando permissões...</div>
         <div v-else>
@@ -101,14 +101,13 @@
                 type="checkbox"
                 :id="`perm_${permission.id}`"
                 :value="permission.id"
-                v-model="currentUserPermissions"
-                class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                v-model="currentUserPermissions" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
               />
               <label :for="`perm_${permission.id}`" class="ml-2 block text-sm text-gray-900">{{ permission.nome }}</label> <!-- Ajustar nome do campo se necessário -->
             </div>
           </div>
           <div class="flex justify-end space-x-3 mt-6">
-            <button type="button" @click="closePermissionsModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition duration-200">
+            <button type="button" @click="closePermissionsModal" class="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition">
               Cancelar
             </button>
             <button @click="handlePermissionsSubmit" :disabled="savingPermissions" class="px-6 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -292,8 +291,3 @@ onMounted(() => {
 });
 
 </script>
-
-<style scoped>
-/* Estilos adicionais, se necessário */
-</style>
-

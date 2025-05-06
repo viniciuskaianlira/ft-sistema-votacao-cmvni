@@ -1,9 +1,9 @@
 <template>
-  <div class="p-6 bg-white min-h-full">
-    <h1 class="text-2xl font-semibold mb-6">Gerenciar Ofícios</h1>
+  <div class="p-6 bg-gray-50 min-h-screen">
+    <h1 class="text-2xl font-bold mb-6">Gerenciar Ofícios</h1>
 
     <!-- Formulário para Adicionar/Editar Ofício -->
-    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-gray-50">
+    <div class="mb-8 p-6 border rounded-lg shadow-sm bg-white">
       <h2 class="text-xl font-semibold mb-4">{{ isEditing ? 'Editar Ofício' : 'Adicionar Novo Ofício' }}</h2>
       <Form @submit="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting, resetForm: veeResetForm }">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -83,8 +83,8 @@
 
     <!-- Listagem de Ofícios -->
     <h2 class="text-xl font-semibold mb-4">Ofícios Cadastrados</h2>
-    <div v-if="loading">Carregando ofícios...</div>
-    <div v-else-if="oficios.length === 0">Nenhum ofício cadastrado.</div>
+    <div v-if="loading" class="text-center p-4">Carregando ofícios...</div>
+    <div v-else-if="oficios.length === 0" class="text-gray-500 p-4">Nenhum ofício cadastrado.</div>
     <ul v-else class="space-y-3">
       <li v-for="oficio in oficios" :key="oficio.id" class="p-4 border rounded-lg flex justify-between items-center">
         <div>
@@ -101,14 +101,14 @@
     </ul>
 
     <!-- Modal Gerenciador de Arquivos -->
-    <div v-if="showFileManager" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
-       <div class="relative mx-auto p-6 border w-full max-w-2xl shadow-lg rounded-md bg-white">
+    <div v-if="showFileManager" class="fixed inset-0 bg-black bg-opacity-50 overflow-y-auto flex items-center justify-center z-50">
+       <div class="relative mx-auto p-6 border w-full max-w-2xl shadow-lg rounded-lg bg-white">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-xl font-semibold">Gerenciar Arquivos - Ofício Nº {{ fileManagerOficio?.numero }}</h3>
           <button @click="closeFileManager" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
         </div>
         <div class="mb-4">
-          <label for="fileUpload" class="block text-sm font-medium text-gray-700 mb-1">Adicionar Novo Arquivo</label>
+          <label for="fileUpload" class="block text-sm font-medium text-gray-700 mb-1">Adicionar Arquivo</label>
           <input type="file" id="fileUpload" @change="handleFileUpload" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
           <button @click="uploadFile" :disabled="!selectedFile || uploadingFile" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50">
             {{ uploadingFile ? 'Enviando...' : 'Enviar Arquivo' }}
@@ -116,10 +116,10 @@
         </div>
         <div>
           <h4 class="text-lg font-medium mb-2">Arquivos Anexados</h4>
-          <div v-if="loadingFiles">Carregando arquivos...</div>
+          <div v-if="loadingFiles" class="text-center p-4">Carregando arquivos...</div>
           <ul v-else-if="oficioFiles.length > 0" class="space-y-2 max-h-60 overflow-y-auto">
-            <li v-for="file in oficioFiles" :key="file.id" class="flex justify-between items-center p-2 border rounded">
-              <a :href="file.url" target="_blank" class="text-blue-600 hover:underline truncate mr-4">{{ file.nome_original || 'Arquivo sem nome' }}</a>
+            <li v-for="file in oficioFiles" :key="file.id" class="flex justify-between items-center p-2 border rounded-lg">
+              <a :href="file.url" target="_blank" class="text-blue-600 hover:underline truncate mr-4">{{ file.nome_original }}</a>
               <button @click="deleteFile(file.id)" class="text-red-500 hover:text-red-700 text-sm">Excluir</button>
             </li>
           </ul>
@@ -333,8 +333,3 @@ const deleteFile = async (fileId) => {
 };
 
 </script>
-
-<style scoped>
-/* Estilos adicionais podem ser adicionados aqui */
-</style>
-
