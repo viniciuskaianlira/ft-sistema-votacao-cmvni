@@ -113,9 +113,14 @@ async function loadRecord() {
           formData[field.name] = Boolean(record[field.name])
         } else {
           // Dynamic select: cast to string
-          const raw = record[field.name]
-          formData[field.name] = raw != null ? String(raw) : ''
-        }
+          const rawValue = record[field.name];
+
+          if(typeof rawValue === 'number'){
+            formData[field.name] = rawValue;
+          }else{
+            formData[field.name] = rawValue != null ? String(rawValue) : '';
+          }
+          }
       } else {
         formData[field.name] = record[field.name] ?? ''
       }
