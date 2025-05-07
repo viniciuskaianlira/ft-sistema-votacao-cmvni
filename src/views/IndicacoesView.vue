@@ -6,7 +6,31 @@
     <div class="mb-8 p-6 border rounded-lg shadow-sm bg-white">
       <h2 class="text-xl font-bold mb-4">{{ isEditing ? 'Editar Indicação' : 'Registrar Nova Indicação' }}</h2>
       <Form @submit="handleSubmit" :validation-schema="schema" v-slot="{ errors, isSubmitting, resetForm: veeResetForm }">
-        <!-- Campos Principais -->
+        <!-- Camposproponentes_ids`"
+              :id="`vereador_${vereador.id}`"
+              :value="vereador.id"
+              class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mr-2"
+            />
+            <label :for="`vereador_${vereador.id}`" class="text-sm text-gray-700">{{ vereador.nome_urna }}</label>
+          </div>
+        </div>
+        <ErrorMessage name="proponentes_ids" class="text-red-500 text-sm mt-1" />
+      </div>
+
+      <!-- Botões do formulário -->
+      <div class="flex justify-end">
+        <button type="submit" :disabled="isSubmitting" class="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span v-if="isSubmitting">Registrando...</span>
+          <span v-else>Registrar Indicação</span>
+        </button>
+      </div>
+    </BaseFormCreate>
+
+    <BaseFormEdit
+      v-if="isEditing && currentIndicacao.id"
+      :schema="schema"
+      :endpoint="`/indicacao/${currentIndicacao.id}
+ Principais -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
             <label for="numero" class="block text-sm font-medium text-gray-700 mb-1">Número</label>
