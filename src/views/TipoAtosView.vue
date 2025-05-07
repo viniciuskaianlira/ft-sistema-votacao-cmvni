@@ -1,18 +1,18 @@
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
     <div class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl font-bold">Lista de Cargos</h1>
+      <h1 class="text-2xl font-bold">Lista de Tipos de Atos</h1>
       <button
         @click="showCreate = true"
         class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
       >
-        + Novo Cargo
+        + Novo Tipo de Ato
       </button>
     </div>
 
     <BaseList
       :key="listKey"
-      endpoint="/cargos"
+      endpoint="/tipo-ato"
       :columns="columns"
       :showActions="true"
       :filterableFields="['nome']"
@@ -23,8 +23,8 @@
 
     <BaseDetail
       v-model:visible="showModal"
-      resource-endpoint="/cargos"
-      :resource-id="selectedCargoId"
+      resource-endpoint="/tipo-ato"
+      :resource-id="selectedTipoAtoId"
       title-field="nome"
       :fields="detailFields"
       :sections="detailSections"
@@ -32,17 +32,17 @@
 
     <BaseFormCreate
       v-model:visible="showCreate"
-      endpoint="/cargos"
+      endpoint="/tipo-ato"
       :fields="createFields"
-      title="Novo Cargo"
+      title="Novo Tipo de Ato"
       @saved="onCreated"
     />
 
     <BaseFormEdit
       v-model:visible="showEdit"
-      title="Editar Cargo"
-      endpoint="/cargos"
-      :record-id="selectedCargoId"
+      title="Editar Tipo de Ato"
+      endpoint="/tipo-ato"
+      :record-id="selectedTipoAtoId"
       :fields="editFields"
       @saved="onEdited"
       @error="onError"
@@ -59,7 +59,7 @@ import BaseDetail from '@/components/crud/BaseDetail.vue';
 import BaseFormCreate from '@/components/crud/BaseFormCreate.vue';
 import BaseFormEdit from '@/components/crud/BaseFormEdit.vue';
 
-import cargosService from '@/services/cargosService';
+import tipoAtosService from '@/services/atosService';
 
 const toast = useToast();
 
@@ -72,14 +72,14 @@ const listKey = ref(0);
 const showModal = ref(false);
 const showCreate = ref(false);
 const showEdit = ref(false);
-const selectedCargoId = ref(null);
+const selectedTipoAtoId = ref(null);
 
 const createFields = [
-  { name: 'nome', label: 'Nome', type: 'text', placeholder: 'Digite o nome do cargo' },
+  { name: 'nome', label: 'Nome', type: 'text', placeholder: 'Digite o nome' },
 ];
 
 const editFields = [
-  { name: 'nome', label: 'Nome', type: 'text', placeholder: 'Digite o nome do cargo' },
+  { name: 'nome', label: 'Nome', type: 'text', placeholder: 'Digite o nome' },
 ];
 
 const detailFields = [
@@ -89,40 +89,40 @@ const detailFields = [
 const detailSections = [];
 
 const onView = (row) => {
-  selectedCargoId.value = row.id;
+  selectedTipoAtoId.value = row.id;
   showModal.value = true;
 };
 
 const onEdit = (row) => {
-  selectedCargoId.value = row.id;
+  selectedTipoAtoId.value = row.id;
   showEdit.value = true;
 };
 
 async function onDelete(row) {
-  if (!confirm('Tem certeza que deseja excluir este cargo?')) return;
+  if (!confirm('Tem certeza que deseja excluir este tipo de ato?')) return;
   try {
-    await cargosService.delete(row.id);
-    toast.success('Cargo excluído com sucesso!');
+    await tipoAtosService.delete(row.id);
+    toast.success('Tipo de Ato excluído com sucesso!');
     listKey.value++;
   } catch (error) {
-    toast.error(error.response?.data?.message || 'Erro ao excluir o cargo.');
+    toast.error(error.response?.data?.message || 'Erro ao excluir o Tipo de Ato.');
   }
 }
 
 const onCreated = () => {
-  toast.success('Cargo criado com sucesso!');
+  toast.success('Tipo de Ato criado com sucesso!');
   listKey.value++;
   showCreate.value = false;
 };
 
 const onEdited = () => {
-  toast.success('Cargo atualizado com sucesso!');
+  toast.success('Tipo de Ato atualizado com sucesso!');
   listKey.value++;
   showEdit.value = false;
 };
 
 const onError = () => {
-  toast.error('Erro ao carregar ou salvar o cargo.');
+  toast.error('Erro ao carregar ou salvar o tipo de ato.');
 };
 </script>
 
