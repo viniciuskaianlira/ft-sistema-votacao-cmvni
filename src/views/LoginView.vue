@@ -82,9 +82,7 @@ const schema = yup.object({
 async function onSubmit(values) {
   try {
     const { data } = await authService.login(values)
-    // guarda token e usuário no store
-    // authStore.setCredentials(data.user, data.token)
-    // também salva no localStorage para o guard de rota
+
     localStorage.setItem('user', JSON.stringify(data.user))
     localStorage.setItem('token', data.token)
 

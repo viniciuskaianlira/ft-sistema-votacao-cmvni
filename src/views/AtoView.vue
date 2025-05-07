@@ -86,7 +86,15 @@ const createFields = [
     optionsEndpoint: '/tipo-ato',
     optionsValueKey: 'id',
     optionsLabelKey: 'nome'
-  }
+  },
+  { 
+    name: 'proponentes', 
+    label: 'Proponentes', 
+    type: 'tags', 
+    optionsEndpoint: '/vereador',      // rota para buscar vereadores
+    optionsValueKey: 'id',             // campo de identificação
+    optionsLabelKey: 'nome'            // campo a exibir   
+  },
 ];
 
 const editFields = [
@@ -99,7 +107,15 @@ const editFields = [
     optionsEndpoint: '/tipo-ato',
     optionsValueKey: 'id',
     optionsLabelKey: 'nome'
-  }
+  },
+  { 
+    name: 'proponentes', 
+    label: 'Proponentes', 
+    type: 'tags', 
+    optionsEndpoint: '/vereador',      // rota para buscar vereadores
+    optionsValueKey: 'id',             // campo de identificação
+    optionsLabelKey: 'nome'            // campo a exibir   
+  },
 ];
 
 const detailFields = [

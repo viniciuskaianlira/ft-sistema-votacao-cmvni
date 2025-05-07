@@ -111,6 +111,46 @@ const routes = [
         path: '/sessoes/presenca',
         name: 'RegistroPresenca',
         component: () => import('@/views/PresencaView.vue')
+      },
+      {
+        path: '/cargos',
+        name: 'Cargos',
+        component: () => import('@/views/CargosView.vue')
+      },
+      {
+        path: '/oficios/recebidos',
+        name: 'Oficios Recebidos',
+        component: () => import('@/views/OficiosRecebidosView.vue')
+      },
+      {
+        path: '/oficios/recebidos',
+        name: 'Oficios Recebidos',
+        component: () => import('@/views/OficiosRecebidosView.vue')
+      },
+      {
+        path: '/configuracoes/usuarios',
+        name: 'Usuários',
+        component: () => import('@/views/UsuariosView.vue')
+      },
+      {
+        path: '/configuracoes/permissoes',
+        name: 'Permissões',
+        component: () => import('@/views/PermissoesView.vue')
+      },
+      {
+        path: '/configuracoes/preferencias',
+        name: 'Preferências',
+        component: () => import('@/views/PreferenciasView.vue')
+      },
+      {
+        path: '/tipos-ato',
+        name: 'Tipo Ato',
+        component: () => import('@/views/TipoAtosView.vue')
+      },
+      {
+        path: '/tipos-projetos',
+        name: 'Tipos Projetos',
+        component: () => import('@/views/TiposProjetosView.vue')
       }
       // … outras sub-rotas …
     ]

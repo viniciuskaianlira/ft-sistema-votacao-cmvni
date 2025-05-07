@@ -41,13 +41,13 @@
       @saved="onCreated"
     />
 
-    <!-- Edição via modal interno -->
+    <!-- Edição -->
     <BaseFormEdit
       v-model:visible="showEdit"
       title="Editar Membro da Mesa Diretora"
       endpoint="/mesa-diretora"
       :record-id="selectedMesaDiretoraId"
-      :fields="editFields"
+      :fields="createFields"
       @saved="onEdited"
       @error="onError"
     />
@@ -68,57 +68,110 @@ import mesaDiretoraService from '@/services/mesaDiretoraService'
 const toast = useToast()
 
 const columns = [
-  { label: 'ID', field: 'id' },
-  { label: 'Vereador', field: 'vereador.nome' },
-  { label: 'Cargo', field: 'cargo' },
-  { label: 'Legislatura', field: 'legislatura.numero' },
+  { label: 'ID',            field: 'id' },
+  { label: 'Legislatura',   field: 'legislatura' },
+  { label: 'Ano da Legislatura',   field: 'ano_legislatura' },
 ]
 
-const reloadKey = ref(0)
-const showModal = ref(false)
-const showCreate = ref(false)
-const showEdit = ref(false)
-const selectedMesaDiretoraId = ref(null)
+const reloadKey                = ref(0)
+const showModal                = ref(false)
+const showCreate               = ref(false)
+const showEdit                 = ref(false)
+const selectedMesaDiretoraId   = ref(null)
+
+const anoLegislatura = [
+  { value: '1', label: 'Primeiro ano' },
+  { value: '2', label: 'Segundo ano' },
+  { value: '3', label: 'Terceiro ano' },
+  { value: '4', label: 'Quarto ano' },
+]
 
 const createFields = [
   {
-    name: 'vereador_id',
-    label: 'Vereador',
+    name: 'legislatura_id',
+    label: 'Legislatura',
+    type: 'select',
+    optionsEndpoint: '/legislatura',
+    optionsValueKey: 'id',
+    optionsLabelKey: 'numero',
+  },
+  {
+    name: 'presidente_id',
+    label: 'Presidente',
     type: 'select',
     optionsEndpoint: '/vereador',
     optionsValueKey: 'id',
     optionsLabelKey: 'nome',
   },
-  { name: 'cargo', label: 'Cargo', type: 'text', placeholder: 'Digite o cargo' },
   {
-    name: 'legislatura_id',
-    label: 'Legislatura',
+    name: 'vice_presidente',
+    label: 'Vice-Presidente',
     type: 'select',
-    optionsEndpoint: '/legislatura',
+    optionsEndpoint: '/vereador',
     optionsValueKey: 'id',
-    optionsLabelKey: 'numero',
+    optionsLabelKey: 'nome',
   },
-]
-
-const editFields = [
-  { name: 'cargo', label: 'Cargo', type: 'text', placeholder: 'Digite o cargo' },
   {
-    name: 'legislatura_id',
-    label: 'Legislatura',
+    name: 'primeiro_secretario',
+    label: 'Primeiro Secretário',
     type: 'select',
-    optionsEndpoint: '/legislatura',
+    optionsEndpoint: '/vereador',
     optionsValueKey: 'id',
-    optionsLabelKey: 'numero',
+    optionsLabelKey: 'nome',
+  },
+  {
+    name: 'segundo_secretario',
+    label: 'Segundo Secretário',
+    type: 'select',
+    optionsEndpoint: '/vereador',
+    optionsValueKey: 'id',
+    optionsLabelKey: 'nome',
+  },
+  {
+    name: 'ano_legislatura',
+    label: 'Ano da Legislatura',
+    type: 'select',
+    options: anoLegislatura,
   },
 ]
 
 const detailFields = [
-  { label: 'Vereador', key: 'vereador.nome' },
-  { label: 'Cargo', key: 'cargo' },
-  { label: 'Legislatura', key: 'legislatura.numero' },
+  // Aqui você pode mostrar campos simples, como ID e Legislatura
+  { key: 'id',                 label: 'ID' },
+  { key: 'legislatura', label: 'Legislatura' },
+  { key: 'ano_legislatura', label: 'Ano Legislatura'}
 ]
 
-const detailSections = []
+const detailSections = [
+  {
+    title:       'Presidente',
+    endpoint:    'presidente',       // GET /mesa-diretora/:id/presidente
+    itemKey:     'presidente',
+    labelKey:    'nome',
+    displayType: 'list'
+  },
+  {
+    title:       'Vice-Presidente',
+    endpoint:    'vice_presidente',  // GET /mesa-diretora/:id/vice_presidente
+    itemKey:     'vice_presidente',
+    labelKey:    'nome',
+    displayType: 'list'
+  },
+  {
+    title:       'Primeiro Secretário',
+    endpoint:    'primeiro_secretario', // GET /mesa-diretora/:id/primeiro_secretario
+    itemKey:     'primeiro_secretario',
+    labelKey:    'nome',
+    displayType: 'list'
+  },
+  {
+    title:       'Segundo Secretário',
+    endpoint:    'segundo_secretario', // GET /mesa-diretora/:id/segundo_secretario
+    itemKey:     'segundo_secretario',
+    labelKey:    'nome',
+    displayType: 'list'
+  }
+]
 
 // ---- Ações ----
 

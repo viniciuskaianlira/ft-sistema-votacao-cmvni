@@ -82,11 +82,12 @@ const showEdit         = ref(false)
 const selectedOficioId = ref(null)
 
 const createFields = [
-  { name: 'numero',       label: 'Número do Ofício',      type: 'text', placeholder: 'Digite o número' },
-  { name: 'assunto',      label: 'Assunto',               type: 'text', placeholder: 'Digite o assunto' },
-  { name: 'destinatario', label: 'Destinatário',          type: 'text', placeholder: 'Digite o destinatário' },
-  { name: 'texto',        label: 'Texto do Ofício',       type: 'textarea', placeholder: 'Digite o texto' },
-  { name: 'data_criacao', label: 'Data', type: 'date', placeholder: 'Informe a data' },
+  { name: 'numero',          label: 'Número do Ofício',      type: 'text',      placeholder: 'Digite o número' },
+  { name: 'assunto',         label: 'Assunto',               type: 'text',      placeholder: 'Digite o assunto' },
+  { name: 'detino',          label: 'Destinatário',          type: 'text',      placeholder: 'Digite o destinatário' },
+  { name: 'texto',           label: 'Texto do Ofício',       type: 'textarea',  placeholder: 'Digite o texto' },
+  { name: 'data_criacao',    label: 'Data',                  type: 'date',      placeholder: 'Informe a data' },
+  { name: 'para_executivo',  label: 'Envio ao Executivo',    type: 'checkbox',  placeholder: ''}
 ]
 
 const editFields = [

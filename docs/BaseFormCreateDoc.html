@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Documentação BaseFormCreate.vue</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    pre { background-color: #f4f4f4; padding: 10px; overflow: auto; }
+    h1, h2, h3 { color: #333; }
+    hr { margin: 20px 0; }
+    li { margin-bottom: 5px; }
+  </style>
+</head>
+<body>
+
+  <h1>BaseFormCreate.vue</h1>
+  <p><strong>Componente genérico de formulário em modal para criação de recursos via API REST.</strong></p>
+  <hr>
+
+  <h2>Visão Geral</h2>
+  <p>O <code>BaseFormCreate.vue</code> exibe um modal contendo um formulário dinâmico baseado em uma lista de campos (<code>fields</code>) definida externamente. Ao submeter, envia os dados (JSON ou <code>FormData</code> se houver upload) para um endpoint e emite eventos de sucesso.</p>
+  <hr>
+
+  <h2>Props</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Prop</th>
+        <th>Tipo</th>
+        <th>Obrigatório</th>
+        <th>Padrão</th>
+        <th>Descrição</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>visible</code></td>
+        <td><code>Boolean</code></td>
+        <td>Sim</td>
+        <td>—</td>
+        <td>Controla a visibilidade do modal.</td>
+      </tr>
+      <tr>
+        <td><code>fields</code></td>
+        <td><code>Array</code></td>
+        <td>Sim</td>
+        <td>—</td>
+        <td>Lista de definições de campos a serem renderizados.</td>
+      </tr>
+      <tr>
+        <td><code>endpoint</code></td>
+        <td><code>String</code></td>
+        <td>Sim</td>
+        <td>—</td>
+        <td>URL base para requisição <code>POST</code> ao submeter o formulário.</td>
+      </tr>
+      <tr>
+        <td><code>title</code></td>
+        <td><code>String</code></td>
+        <td>Não</td>
+        <td><code>'Novo'</code></td>
+        <td>Texto do título do modal.</td>
+      </tr>
+    </tbody>
+  </table>
+  <hr>
+
+  <h2>Definição de Campos (<code>fields</code>)</h2>
+  <p>Cada elemento do array <code>fields</code> é um objeto com as seguintes propriedades:</p>
+  <ul>
+    <li><strong><code>name</code></strong> (<code>String</code>): Nome do campo que será enviado no payload.</li>
+    <li><strong><code>field</code></strong> (<code>String</code>, opcional): Se diferente de <code>name</code>, usado como chave no <code>v-model</code> e no <code>id</code> do input.</li>
+    <li><strong><code>label</code></strong> (<code>String</code>): Texto exibido no <code>label</code> ou, para checkbox, ao lado do input.</li>
+    <li><strong><code>type</code></strong> (<code>String</code>, obrigatório): Tipo de campo. Valores aceitos:
+      <ul>
+        <li><code>'text'</code>, <code>'number'</code>, <code>'email'</code>, <code>'password'</code>, <code>'date'</code></li>
+        <li><code>'textarea'</code></li>
+        <li><code>'select'</code></li>
+        <li><code>'checkbox'</code></li>
+        <li><code>'file'</code></li>
+        <li><code>'tags'</code></li>
+      </ul>
+    </li>
+    <li><strong><code>placeholder</code></strong> (<code>String</code>, opcional): Texto de placeholder em inputs de texto ou tags.</li>
+    <li><strong><code>options</code></strong> (<code>Array</code>, opcional): Para <code>type: 'select'</code>: lista estática de objetos <code>{ value, label }</code>.</li>
+    <li><strong><code>optionsEndpoint</code></strong> (<code>String</code>, opcional): Para <code>type: 'select'</code>: rota da API para buscar opções.</li>
+    <li><strong><code>optionsValueKey</code></strong> / <strong><code>optionsLabelKey</code></strong> (<code>String</code>, opcional): Chaves alternativas no objeto de opção (padrão: <code>'value'</code> e <code>'label'</code>).</li>
+    <li><strong><code>multiple</code></strong> (<code>Boolean</code>, opcional): Para <code>type: 'file'</code>, permite upload múltiplo.</li>
+  </ul>
+  <hr>
+
+  <h2>Tipos de Campo Suportados</h2>
+  <ol>
+    <li><strong>Inputs simples</strong> (<code>'text' | 'number' | 'email' | 'password' | 'date'</code>) – Renderiza <code>&lt;input&gt;</code>.</li>
+    <li><strong>Textarea</strong> (<code>'textarea'</code>) – Renderiza <code>&lt;textarea&gt;</code> com <code>rows="4"</code>.</li>
+    <li><strong>Select</strong> (<code>'select'</code>) – Popula a partir de <code>options</code> estático ou de <code>optionsEndpoint</code>.</li>
+    <li><strong>Checkbox</strong> (<code>'checkbox'</code>) – <code>&lt;input type="checkbox"&gt;</code> inicializado em <code>false</code>.</li>
+    <li><strong>File</strong> (<code>'file'</code>) – <code>&lt;input type="file"&gt;</code> com multiple opcional.</li>
+    <li><strong>Tags</strong> (<code>'tags'</code>) – Input para adicionar múltiplas tags.</li>
+  </ol>
+  <hr>
+
+  <h2>Eventos Emitidos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Evento</th>
+        <th>Payload</th>
+        <th>Descrição</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>update:visible</code></td>
+        <td><code>Boolean</code></td>
+        <td>Quando o modal fecha (<code>false</code>).</td>
+      </tr>
+      <tr>
+        <td><code>saved</code></td>
+        <td><code>Object</code></td>
+        <td>Resposta da API após <code>POST</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+  <hr>
+
+  <h2>Funcionamento Interno</h2>
+  <ol>
+    <li>Ao <code>visible = true</code>, chama <code>initForm()</code> para inicializar valores e carregar opções.</li>
+    <li>No submit, converte para <code>FormData</code> se houver arquivos, faz <code>POST</code> e emite eventos.</li>
+  </ol>
+  <hr>
+
+  <h2>Exemplo de Uso</h2>
+  <pre><code>&lt;script setup&gt;
+import { ref } from 'vue'
+import BaseFormCreate from '@/components/crud/BaseFormCreate.vue'
+
+const showCreate = ref(false)
+const createFields = [
+  { name: 'titulo', label: 'Título', type: 'text' },
+  { name: 'descricao', label: 'Descrição', type: 'textarea' },
+  {
+    name: 'categoria', label: 'Categoria', type: 'select',
+    options: [
+      { value: 'a', label: 'A' },
+      { value: 'b', label: 'B' }
+    ]
+  },
+  { name: 'ativo', label: 'Ativo', type: 'checkbox' },
+  { name: 'anexos', label: 'Anexos', type: 'file', multiple: true }
+]
+&lt;/script&gt;
+
+&lt;template&gt;
+  &lt;button @click="showCreate = true"&gt;+ Novo&lt;/button&gt;
+  &lt;BaseFormCreate
+    v-model:visible="showCreate"
+    endpoint="/recursos"
+    :fields="createFields"
+    title="Criar Recurso"
+    @saved="handleSaved"
+  /&gt;
+&lt;/template&gt;</code></pre>
+
+</body>
+</html>

@@ -22,9 +22,11 @@
           <div
             v-for="field in fields"
             :key="field.field ?? field.name"
-            class="flex flex-col"
+            class="flex flex-col relative"
           >
+            <!-- Label for non-checkbox/non-tags -->
             <label
+              v-if="field.type !== 'checkbox' && field.type !== 'tags'"
               :for="field.field ?? field.name"
               class="mb-1 text-sm font-medium text-gray-700"
             >
@@ -61,12 +63,28 @@
               <option value="" disabled>Selecione {{ field.label }}</option>
               <option
                 v-for="opt in options[keyOf(field)]"
-                :key="opt[field.optionsValueKey]"
-                :value="opt[field.optionsValueKey]"
+                :key="opt[field.optionsValueKey || 'value']"
+                :value="opt[field.optionsValueKey || 'value']"
               >
-                {{ opt[field.optionsLabelKey] }}
+                {{ opt[field.optionsLabelKey || 'label'] }}
               </option>
             </select>
+
+            <!-- Checkbox -->
+            <div v-else-if="field.type==='checkbox'" class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                :id="field.field ?? field.name"
+                v-model="form[keyOf(field)]"
+                class="h-4 w-4 text-blue-600 border-gray-300 rounded"
+              />
+              <label
+                :for="field.field ?? field.name"
+                class="text-sm text-gray-700"
+              >
+                {{ field.label }}
+              </label>
+            </div>
 
             <!-- File Upload -->
             <input
@@ -78,31 +96,50 @@
               class="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
-            <!-- Tags Input (multiple values) -->
+            <!-- Tags Input with Autocomplete -->
             <div v-else-if="field.type==='tags'" class="space-y-2">
+              <label v-if="field.label" class="mb-1 text-sm font-medium text-gray-700">
+                {{ field.label }}
+              </label>
               <div class="flex space-x-2">
                 <input
                   type="text"
                   v-model="tagInput[keyOf(field)]"
-                  :placeholder="field.placeholder || 'Digite e pressione Enter'"
-                  @keyup.enter.prevent="addTag(field)"
+                  :placeholder="field.placeholder || 'Digite para buscar...'"
                   class="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1"
                 />
                 <button
                   type="button"
-                  @click="addTag(field)"
+                  @click="addTag(field, null)"
                   class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
                   Adicionar
                 </button>
               </div>
+
+              <!-- Suggestions Dropdown -->
+              <ul
+                v-if="suggestions[keyOf(field)]?.length"
+                class="absolute bg-white border border-gray-200 rounded mt-1 w-full max-h-40 overflow-auto z-20"
+              >
+                <li
+                  v-for="item in suggestions[keyOf(field)]"
+                  :key="item[field.optionsValueKey || 'id']"
+                  @click="addTag(field, item)"
+                  class="px-3 py-1 hover:bg-gray-100 cursor-pointer"
+                >
+                  {{ item[field.optionsLabelKey || 'label'] }}
+                </li>
+              </ul>
+
+              <!-- Selected Tags -->
               <div class="flex flex-wrap mt-2">
                 <span
                   v-for="(tag, idx) in form[keyOf(field)]"
                   :key="idx"
                   class="mr-2 mb-2 px-2 py-1 bg-gray-200 rounded-full flex items-center"
                 >
-                  {{ tag }}
+                  {{ tag[field.optionsLabelKey || 'label'] }}
                   <button
                     type="button"
                     @click="removeTag(field, idx)"
@@ -140,7 +177,6 @@
 <script setup>
 import { reactive, watch, onMounted } from 'vue'
 import api from '@/services/api.js'
-import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   visible:   { type: Boolean, required: true },
@@ -150,10 +186,10 @@ const props = defineProps({
 })
 const emit = defineEmits(['update:visible','saved'])
 
-const toast = useToast()
 const form = reactive({})
 const options = reactive({})
 const tagInput = reactive({})
+const suggestions = reactive({})
 
 function keyOf(field) {
   return field.field ?? field.name
@@ -162,46 +198,84 @@ function keyOf(field) {
 function initForm() {
   props.fields.forEach(f => {
     const key = keyOf(f)
-    // inicializa arrays para file e tags
-    if (f.type === 'file') form[key] = []
-    else if (f.type === 'tags') {
+    // Inicializa valores conforme tipo
+    if (f.type === 'file') {
+      form[key] = []
+    } else if (f.type === 'tags') {
       form[key] = []
       tagInput[key] = ''
+      suggestions[key] = []
+    } else if (f.type === 'checkbox') {
+      form[key] = false
+    } else {
+      form[key] = ''
     }
-    else form[key] = ''
 
-    if (f.type === 'select' && f.optionsEndpoint) {
-      options[key] = []
-      api.get(f.optionsEndpoint)
-        .then(res => {
-          const arr = Array.isArray(res.data)
-            ? res.data
-            : res.data.data || []
-          options[key] = arr
-        })
-        .catch(e => {
-          console.error(`Erro ao carregar opções ${key}:`, e)
-          toast.error(`Falha ao carregar opções de ${f.label}`)
-        })
+    // Carrega opções para selects
+    if (f.type === 'select') {
+      if (Array.isArray(f.options)) {
+        options[key] = f.options
+      } else if (f.optionsEndpoint) {
+        options[key] = []
+        api.get(f.optionsEndpoint)
+          .then(res => {
+            const arr = Array.isArray(res.data)
+              ? res.data
+              : res.data.data || []
+            options[key] = arr
+          })
+          .catch(e => console.error(`Erro ao carregar opções ${key}:`, e))
+      } else {
+        options[key] = []
+      }
     }
   })
 }
 
+// Initialize when modal opens
 watch(() => props.visible, v => { if (v) initForm() })
 onMounted(() => { if (props.visible) initForm() })
 
+// Watch tagInput to fetch suggestions
+watch(tagInput, (all) => {
+  props.fields.forEach(f => {
+    if (f.type === 'tags' && f.optionsEndpoint) {
+      const key = keyOf(f)
+      const query = tagInput[key]?.trim()
+      if (query) {
+        api.get(f.optionsEndpoint, { params: { q: query } })
+          .then(res => {
+            const arr = Array.isArray(res.data.data) ? res.data.data : res.data
+            suggestions[key] = arr
+          })
+          .catch(() => suggestions[key] = [])
+      } else {
+        suggestions[key] = []
+      }
+    }
+  })
+}, { deep: true })
+
+// Handlers
 function onFilesChange(event, field) {
-  const files = Array.from(event.target.files)
-  form[keyOf(field)] = files
+  form[keyOf(field)] = Array.from(event.target.files)
 }
 
-function addTag(field) {
+function addTag(field, item = null) {
   const key = keyOf(field)
-  const val = tagInput[key].trim()
-  if (val) {
-    form[key].push(val)
-    tagInput[key] = ''
+  if (item) {
+    form[key].push(item)
+  } else {
+    const val = tagInput[key].trim()
+    if (val) {
+      form[key].push({
+        [field.optionsValueKey]: val,
+        [field.optionsLabelKey]: val
+      })
+    }
   }
+  tagInput[key] = ''
+  suggestions[key] = []
 }
 
 function removeTag(field, idx) {
@@ -212,14 +286,12 @@ async function onSubmit() {
   try {
     let payload = form
     let config = {}
-    // se tiver file, usa FormData
+
+    // Se tiver upload de arquivos, usa FormData
     if (props.fields.some(f => f.type === 'file')) {
       const data = new FormData()
-      Object.keys(form).forEach(key => {
-        const val = form[key]
-        if (Array.isArray(val) && val[0] instanceof File) {
-          val.forEach(file => data.append(key, file))
-        } else if (Array.isArray(val)) {
+      Object.entries(form).forEach(([key, val]) => {
+        if (Array.isArray(val)) {
           val.forEach(item => data.append(key, item))
         } else {
           data.append(key, val)
@@ -230,12 +302,10 @@ async function onSubmit() {
     }
 
     const res = await api.post(props.endpoint, payload, config)
-    toast.success('Salvo com sucesso!')
     emit('saved', res.data)
     close()
   } catch (e) {
     console.error('Erro ao salvar:', e)
-    toast.error(e.response?.data?.message || 'Falha ao salvar.')
   }
 }
 
@@ -246,5 +316,5 @@ function close() {
 
 <style scoped>
 .modal-enter-active, .modal-leave-active { transition: opacity 0.2s ease }
-.modal-enter-from,  .modal-leave-to    { opacity: 0 }
+.modal-enter-from, .modal-leave-to    { opacity: 0 }
 </style>
